@@ -22,28 +22,44 @@
       --muted: #66736d;
       --border: #e1e8e4;
       --bg: #f6f9f7;
+      --danger: #b42318;
+      --warning: #8a6d1d;
+    }
+
+    html {
+      scroll-behavior: smooth;
     }
 
     body {
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI",
-        "Noto Sans Bengali", Arial, sans-serif;
+      font-family:
+        -apple-system,
+        BlinkMacSystemFont,
+        "Segoe UI",
+        "Noto Sans Bengali",
+        Arial,
+        sans-serif;
       background: var(--bg);
       color: var(--text);
       line-height: 1.6;
     }
 
+    /* =========================
+       HEADER
+    ========================= */
+
     header {
-      background: white;
+      background: rgba(255, 255, 255, 0.96);
       border-bottom: 1px solid var(--border);
       position: sticky;
       top: 0;
-      z-index: 100;
+      z-index: 1000;
+      backdrop-filter: blur(10px);
     }
 
     .nav {
       max-width: 1200px;
       margin: auto;
-      padding: 15px 22px;
+      padding: 14px 22px;
       display: flex;
       align-items: center;
       justify-content: space-between;
@@ -57,6 +73,7 @@
       font-size: 20px;
       font-weight: 800;
       color: var(--green);
+      white-space: nowrap;
     }
 
     .logo-mark {
@@ -72,7 +89,7 @@
 
     nav {
       display: flex;
-      gap: 22px;
+      gap: 20px;
       align-items: center;
     }
 
@@ -81,6 +98,7 @@
       color: #3e4944;
       font-size: 14px;
       font-weight: 600;
+      transition: 0.2s;
     }
 
     nav a:hover {
@@ -94,10 +112,27 @@
       border-radius: 8px;
     }
 
+    .login-btn:hover {
+      background: var(--dark-green);
+    }
+
+    /* =========================
+       HERO
+    ========================= */
+
     .hero {
       background:
-        radial-gradient(circle at top right, #dff2e9 0, transparent 35%),
-        linear-gradient(180deg, #ffffff 0%, #f3f9f6 100%);
+        radial-gradient(
+          circle at top right,
+          #dff2e9 0,
+          transparent 35%
+        ),
+        linear-gradient(
+          180deg,
+          #ffffff 0%,
+          #f3f9f6 100%
+        );
+
       padding: 75px 22px 70px;
       text-align: center;
     }
@@ -132,6 +167,10 @@
       font-size: 17px;
     }
 
+    /* =========================
+       SEARCH
+    ========================= */
+
     .search-box {
       max-width: 720px;
       margin: 30px auto 0;
@@ -140,7 +179,8 @@
       border: 1px solid var(--border);
       border-radius: 14px;
       display: flex;
-      box-shadow: 0 12px 35px rgba(0, 80, 60, 0.08);
+      box-shadow:
+        0 12px 35px rgba(0, 80, 60, 0.08);
     }
 
     .search-box input {
@@ -150,6 +190,7 @@
       padding: 15px;
       font-size: 15px;
       background: transparent;
+      color: var(--text);
     }
 
     .search-box button {
@@ -161,11 +202,48 @@
       font-size: 15px;
       font-weight: 700;
       cursor: pointer;
+      transition: 0.2s;
     }
 
     .search-box button:hover {
       background: var(--dark-green);
     }
+
+    .search-box button:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+
+    /* =========================
+       STATUS MESSAGE
+    ========================= */
+
+    .connection-status {
+      max-width: 720px;
+      margin: 15px auto 0;
+      padding: 10px 14px;
+      border-radius: 9px;
+      font-size: 13px;
+      display: none;
+    }
+
+    .connection-status.success {
+      display: block;
+      background: #eaf6f1;
+      color: var(--green);
+      border: 1px solid #cce9dc;
+    }
+
+    .connection-status.error {
+      display: block;
+      background: #fff1f0;
+      color: var(--danger);
+      border: 1px solid #f3c7c3;
+    }
+
+    /* =========================
+       STATS
+    ========================= */
 
     .stats {
       max-width: 1050px;
@@ -181,7 +259,8 @@
       display: grid;
       grid-template-columns: repeat(3, 1fr);
       overflow: hidden;
-      box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+      box-shadow:
+        0 10px 30px rgba(0,0,0,0.05);
     }
 
     .stat {
@@ -205,6 +284,10 @@
       font-size: 13px;
     }
 
+    /* =========================
+       COMMON SECTION
+    ========================= */
+
     .section {
       max-width: 1200px;
       margin: auto;
@@ -226,6 +309,10 @@
       color: var(--muted);
     }
 
+    /* =========================
+       MINISTRY CARDS
+    ========================= */
+
     .cards {
       display: grid;
       grid-template-columns: repeat(4, 1fr);
@@ -242,7 +329,8 @@
 
     .card:hover {
       transform: translateY(-4px);
-      box-shadow: 0 12px 25px rgba(0,0,0,0.07);
+      box-shadow:
+        0 12px 25px rgba(0,0,0,0.07);
     }
 
     .card-icon {
@@ -267,6 +355,64 @@
       font-size: 13px;
       color: var(--muted);
     }
+
+    /* =========================
+       SEARCH RESULTS
+    ========================= */
+
+    #searchResultsSection {
+      display: none;
+    }
+
+    .results-box {
+      max-width: 900px;
+      margin: auto;
+    }
+
+    .result-card {
+      background: white;
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 20px;
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 15px;
+    }
+
+    .result-info h3 {
+      color: var(--dark-green);
+      margin-bottom: 5px;
+      font-size: 18px;
+    }
+
+    .result-info p {
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .result-badge {
+      background: var(--light-green);
+      color: var(--green);
+      padding: 6px 10px;
+      border-radius: 20px;
+      font-size: 12px;
+      white-space: nowrap;
+    }
+
+    .no-result {
+      text-align: center;
+      padding: 30px;
+      background: white;
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      color: var(--muted);
+    }
+
+    /* =========================
+       TRANSPARENCY
+    ========================= */
 
     .transparency {
       max-width: 1200px;
@@ -306,6 +452,10 @@
       font-size: 14px;
     }
 
+    /* =========================
+       NOTICE
+    ========================= */
+
     .notice {
       max-width: 1000px;
       margin: 55px auto;
@@ -320,6 +470,10 @@
       color: #62562e;
       font-size: 14px;
     }
+
+    /* =========================
+       FOOTER
+    ========================= */
 
     footer {
       margin-top: 80px;
@@ -354,7 +508,12 @@
       font-size: 12px;
     }
 
+    /* =========================
+       RESPONSIVE
+    ========================= */
+
     @media (max-width: 850px) {
+
       nav a:not(.login-btn) {
         display: none;
       }
@@ -369,8 +528,27 @@
     }
 
     @media (max-width: 600px) {
+
+      .nav {
+        padding: 12px 15px;
+      }
+
+      .logo {
+        font-size: 17px;
+      }
+
+      .logo-mark {
+        width: 36px;
+        height: 36px;
+        font-size: 18px;
+      }
+
       .hero {
         padding-top: 55px;
+      }
+
+      .hero p {
+        font-size: 15px;
       }
 
       .search-box {
@@ -402,32 +580,71 @@
       .transparency-box {
         padding: 30px 22px;
       }
+
+      .result-card {
+        align-items: flex-start;
+        flex-direction: column;
+      }
     }
   </style>
 </head>
 
 <body>
 
+  <!-- =========================
+       HEADER
+  ========================== -->
+
   <header>
+
     <div class="nav">
 
       <div class="logo">
-        <div class="logo-mark">🇧🇩</div>
-        <div>আর্থিক স্বচ্ছতা</div>
+
+        <div class="logo-mark">
+          🇧🇩
+        </div>
+
+        <div>
+          আর্থিক স্বচ্ছতা
+        </div>
+
       </div>
 
       <nav>
-        <a href="#home">হোম</a>
-        <a href="#ministries">মন্ত্রণালয়</a>
-        <a href="#transparency">স্বচ্ছতা</a>
-        <a href="#about">সম্পর্কে</a>
-        <a href="#login" class="login-btn">লগইন</a>
+
+        <a href="#home">
+          হোম
+        </a>
+
+        <a href="#ministries">
+          মন্ত্রণালয়
+        </a>
+
+        <a href="#transparency">
+          স্বচ্ছতা
+        </a>
+
+        <a href="#about">
+          সম্পর্কে
+        </a>
+
+        <a href="#login" class="login-btn">
+          লগইন
+        </a>
+
       </nav>
 
     </div>
+
   </header>
 
+
   <main>
+
+    <!-- =========================
+         HERO
+    ========================== -->
 
     <section class="hero" id="home">
 
@@ -436,7 +653,8 @@
       </div>
 
       <h1>
-        তথ্য জানুন,<br>
+        তথ্য জানুন,
+        <br>
         <span>স্বচ্ছতা যাচাই করুন</span>
       </h1>
 
@@ -446,114 +664,305 @@
         কাঠামোর মাধ্যমে উপস্থাপনের উদ্যোগ।
       </p>
 
+
+      <!-- SEARCH -->
+
       <div class="search-box">
+
         <input
           type="text"
           id="searchInput"
           placeholder="কর্মকর্তার নাম বা পদ লিখুন..."
+          autocomplete="off"
         >
-        <button onclick="searchOfficer()">খুঁজুন</button>
+
+        <button
+          id="searchButton"
+          onclick="searchOfficer()"
+        >
+          খুঁজুন
+        </button>
+
       </div>
 
+
+      <div
+        id="connectionStatus"
+        class="connection-status"
+      ></div>
+
     </section>
+
+
+    <!-- =========================
+         STATS
+    ========================== -->
 
     <section class="stats">
 
       <div class="stats-grid">
 
         <div class="stat">
-          <strong id="officialCount">০</strong>
-          <span>নিবন্ধিত কর্মকর্তা</span>
+
+          <strong id="officialCount">
+            ০
+          </strong>
+
+          <span>
+            নিবন্ধিত কর্মকর্তা
+          </span>
+
         </div>
 
-        <div class="stat">
-          <strong>০</strong>
-          <span>প্রকাশিত আর্থিক প্রোফাইল</span>
-        </div>
 
         <div class="stat">
-          <strong>০</strong>
-          <span>যাচাইকৃত তথ্য</span>
+
+          <strong id="profileCount">
+            ০
+          </strong>
+
+          <span>
+            প্রকাশিত আর্থিক প্রোফাইল
+          </span>
+
+        </div>
+
+
+        <div class="stat">
+
+          <strong id="verifiedCount">
+            ০
+          </strong>
+
+          <span>
+            যাচাইকৃত তথ্য
+          </span>
+
         </div>
 
       </div>
 
     </section>
 
-    <section class="section" id="ministries">
+
+    <!-- =========================
+         SEARCH RESULTS
+    ========================== -->
+
+    <section
+      class="section"
+      id="searchResultsSection"
+    >
 
       <div class="section-title">
-        <h2>মন্ত্রণালয় ও বিভাগ</h2>
-        <p>সরকারি প্রতিষ্ঠানের তথ্য কাঠামোবদ্ধভাবে দেখুন</p>
+
+        <h2>
+          অনুসন্ধানের ফলাফল
+        </h2>
+
+        <p>
+          আপনার অনুসন্ধানের সঙ্গে মিলে যাওয়া তথ্য
+        </p>
+
       </div>
+
+      <div
+        id="searchResults"
+        class="results-box"
+      ></div>
+
+    </section>
+
+
+    <!-- =========================
+         MINISTRIES
+    ========================== -->
+
+    <section
+      class="section"
+      id="ministries"
+    >
+
+      <div class="section-title">
+
+        <h2>
+          মন্ত্রণালয় ও বিভাগ
+        </h2>
+
+        <p>
+          সরকারি প্রতিষ্ঠানের তথ্য কাঠামোবদ্ধভাবে দেখুন
+        </p>
+
+      </div>
+
 
       <div class="cards">
 
         <div class="card">
-          <div class="card-icon">🌾</div>
-          <h3>কৃষি</h3>
-          <p>কৃষি মন্ত্রণালয় ও সংশ্লিষ্ট দপ্তর</p>
+
+          <div class="card-icon">
+            🌾
+          </div>
+
+          <h3>
+            কৃষি
+          </h3>
+
+          <p>
+            কৃষি মন্ত্রণালয় ও সংশ্লিষ্ট দপ্তর
+          </p>
+
         </div>
 
-        <div class="card">
-          <div class="card-icon">🏞️</div>
-          <h3>ভূমি</h3>
-          <p>ভূমি মন্ত্রণালয় ও মাঠ প্রশাসন</p>
-        </div>
 
         <div class="card">
-          <div class="card-icon">🎓</div>
-          <h3>শিক্ষা</h3>
-          <p>শিক্ষা মন্ত্রণালয় ও সংশ্লিষ্ট প্রতিষ্ঠান</p>
+
+          <div class="card-icon">
+            🏞️
+          </div>
+
+          <h3>
+            ভূমি
+          </h3>
+
+          <p>
+            ভূমি মন্ত্রণালয় ও মাঠ প্রশাসন
+          </p>
+
         </div>
 
-        <div class="card">
-          <div class="card-icon">🏥</div>
-          <h3>স্বাস্থ্য</h3>
-          <p>স্বাস্থ্য ও পরিবার কল্যাণ সংক্রান্ত প্রতিষ্ঠান</p>
-        </div>
 
         <div class="card">
-          <div class="card-icon">⚡</div>
-          <h3>বিদ্যুৎ ও জ্বালানি</h3>
-          <p>বিদ্যুৎ ও জ্বালানি খাতের প্রতিষ্ঠান</p>
+
+          <div class="card-icon">
+            🎓
+          </div>
+
+          <h3>
+            শিক্ষা
+          </h3>
+
+          <p>
+            শিক্ষা মন্ত্রণালয় ও সংশ্লিষ্ট প্রতিষ্ঠান
+          </p>
+
         </div>
 
-        <div class="card">
-          <div class="card-icon">💰</div>
-          <h3>অর্থ</h3>
-          <p>অর্থ মন্ত্রণালয় ও সংশ্লিষ্ট দপ্তর</p>
-        </div>
 
         <div class="card">
-          <div class="card-icon">⚖️</div>
-          <h3>আইন ও বিচার</h3>
-          <p>আইন, বিচার ও সংসদ বিষয়ক প্রতিষ্ঠান</p>
+
+          <div class="card-icon">
+            🏥
+          </div>
+
+          <h3>
+            স্বাস্থ্য
+          </h3>
+
+          <p>
+            স্বাস্থ্য ও পরিবার কল্যাণ সংক্রান্ত প্রতিষ্ঠান
+          </p>
+
         </div>
 
+
         <div class="card">
-          <div class="card-icon">🏛️</div>
-          <h3>জনপ্রশাসন</h3>
-          <p>জনপ্রশাসন ও সংশ্লিষ্ট সরকারি দপ্তর</p>
+
+          <div class="card-icon">
+            ⚡
+          </div>
+
+          <h3>
+            বিদ্যুৎ ও জ্বালানি
+          </h3>
+
+          <p>
+            বিদ্যুৎ ও জ্বালানি খাতের প্রতিষ্ঠান
+          </p>
+
+        </div>
+
+
+        <div class="card">
+
+          <div class="card-icon">
+            💰
+          </div>
+
+          <h3>
+            অর্থ
+          </h3>
+
+          <p>
+            অর্থ মন্ত্রণালয় ও সংশ্লিষ্ট দপ্তর
+          </p>
+
+        </div>
+
+
+        <div class="card">
+
+          <div class="card-icon">
+            ⚖️
+          </div>
+
+          <h3>
+            আইন ও বিচার
+          </h3>
+
+          <p>
+            আইন, বিচার ও সংসদ বিষয়ক প্রতিষ্ঠান
+          </p>
+
+        </div>
+
+
+        <div class="card">
+
+          <div class="card-icon">
+            🏛️
+          </div>
+
+          <h3>
+            জনপ্রশাসন
+          </h3>
+
+          <p>
+            জনপ্রশাসন ও সংশ্লিষ্ট সরকারি দপ্তর
+          </p>
+
         </div>
 
       </div>
 
     </section>
 
-    <section class="transparency" id="transparency">
+
+    <!-- =========================
+         TRANSPARENCY
+    ========================== -->
+
+    <section
+      class="transparency"
+      id="transparency"
+    >
 
       <div class="transparency-box">
 
         <div>
-          <h2>স্বচ্ছতার মূল কাঠামো</h2>
+
+          <h2>
+            স্বচ্ছতার মূল কাঠামো
+          </h2>
 
           <p>
             প্রকাশযোগ্য তথ্যকে উৎস, সময়কাল ও যাচাইয়ের অবস্থাসহ
             উপস্থাপন করা হবে। কোনো তথ্যের অসামঞ্জস্যকে নিজে থেকে
             অপরাধ বা দুর্নীতির প্রমাণ হিসেবে গণ্য করা হবে না।
           </p>
+
         </div>
+
 
         <div class="points">
 
@@ -579,11 +988,21 @@
 
     </section>
 
-    <section class="notice" id="about">
+
+    <!-- =========================
+         NOTICE
+    ========================== -->
+
+    <section
+      class="notice"
+      id="about"
+    >
 
       <div class="notice-box">
 
-        <strong>গুরুত্বপূর্ণ:</strong>
+        <strong>
+          গুরুত্বপূর্ণ:
+        </strong>
 
         এই প্ল্যাটফর্মে শুধুমাত্র আইনসম্মতভাবে প্রকাশযোগ্য
         তথ্য প্রকাশের নীতি অনুসরণ করা হবে। ব্যক্তিগত ব্যাংক
@@ -595,6 +1014,11 @@
     </section>
 
   </main>
+
+
+  <!-- =========================
+       FOOTER
+  ========================== -->
 
   <footer id="login">
 
@@ -618,143 +1042,497 @@
   </footer>
 
 
-  <!-- Supabase -->
+  <!-- =========================
+       SUPABASE
+  ========================== -->
+
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
+
   <script>
+
+    /* =========================================
+       SUPABASE CONFIGURATION
+    ========================================== */
 
     const SUPABASE_URL =
       "https://dlfobjpzxdnnszpqowqd.supabase.co";
 
+
+    /*
+      এখানে তোমার Supabase Publishable Key বসাও।
+
+      উদাহরণ:
+
+      const SUPABASE_PUBLISHABLE_KEY =
+        "তোমার-key";
+
+      এই key এখানে chat-এ পাঠানোর দরকার নেই।
+    */
+
     const SUPABASE_PUBLISHABLE_KEY =
-      "এখানে_তোমার_Publishable_Key_বসাও";import { createClient } from '@supabase/supabase-js'
-const supabaseUrl = 'https://dlfobjpzxdnnszpqowqd.supabase.co'
-const supabaseKey = process.env.SUPABASE_KEY
-const supabase = createClient(supabaseUrl, supabaseKey)
+      "এখানে_তোমার_Publishable_Key_বসাও";
 
 
-    const db = window.supabase.createClient(
-      SUPABASE_URL,
-      SUPABASE_PUBLISHABLE_KEY
-    );
+    /* =========================================
+       SUPABASE CLIENT
+    ========================================== */
+
+    let db = null;
 
 
-    // বাংলা সংখ্যা দেখানোর জন্য
+    function initializeSupabase() {
+
+      try {
+
+        if (
+          !window.supabase ||
+          !window.supabase.createClient
+        ) {
+
+          showConnectionStatus(
+            "Supabase library চালু হয়নি।",
+            "error"
+          );
+
+          return false;
+        }
+
+
+        if (
+          !SUPABASE_PUBLISHABLE_KEY ||
+          SUPABASE_PUBLISHABLE_KEY ===
+          "এখানে_তোমার_Publishable_Key_বসাও"
+        ) {
+
+          showConnectionStatus(
+            "Supabase Publishable Key এখনো বসানো হয়নি।",
+            "error"
+          );
+
+          return false;
+        }
+
+
+        db = window.supabase.createClient(
+          SUPABASE_URL,
+          SUPABASE_PUBLISHABLE_KEY
+        );
+
+
+        return true;
+
+      } catch (error) {
+
+        console.error(
+          "Supabase initialization error:",
+          error
+        );
+
+        showConnectionStatus(
+          "Supabase connection তৈরি করা যায়নি।",
+          "error"
+        );
+
+        return false;
+      }
+    }
+
+
+    /* =========================================
+       STATUS MESSAGE
+    ========================================== */
+
+    function showConnectionStatus(
+      message,
+      type
+    ) {
+
+      const element =
+        document.getElementById(
+          "connectionStatus"
+        );
+
+      if (!element) {
+        return;
+      }
+
+      element.textContent = message;
+
+      element.className =
+        "connection-status " +
+        type;
+    }
+
+
+    /* =========================================
+       বাংলা সংখ্যা
+    ========================================== */
+
     function banglaNumber(number) {
-      const digits = "০১২৩৪৫৬৭৮৯";
+
+      const digits =
+        "০১২৩৪৫৬৭৮৯";
 
       return String(number).replace(
         /\d/g,
-        digit => digits[digit]
+        function(digit) {
+          return digits[digit];
+        }
       );
     }
 
 
-    // মোট কর্মকর্তা সংখ্যা
+    /* =========================================
+       মোট কর্মকর্তা সংখ্যা
+    ========================================== */
+
     async function loadOfficialCount() {
 
-      const { count, error } = await db
+      if (!db) {
+        return;
+      }
+
+
+      const {
+        count,
+        error
+      } = await db
         .from("officials")
         .select("*", {
           count: "exact",
           head: true
         });
 
+
       if (error) {
-        console.error("Count error:", error);
+
+        console.error(
+          "Official count error:",
+          error
+        );
+
+        showConnectionStatus(
+          "কর্মকর্তার সংখ্যা আনা যায়নি। Supabase RLS/permission পরীক্ষা করতে হবে।",
+          "error"
+        );
+
         return;
       }
 
-      document.getElementById("officialCount").textContent =
-        banglaNumber(count || 0);
+
+      document.getElementById(
+        "officialCount"
+      ).textContent =
+        banglaNumber(
+          count || 0
+        );
     }
 
 
-    // কর্মকর্তা খোঁজা
+    /* =========================================
+       কর্মকর্তা অনুসন্ধান
+    ========================================== */
+
     async function searchOfficer() {
 
+      if (!db) {
+
+        showConnectionStatus(
+          "Supabase এখনো সংযুক্ত নয়।",
+          "error"
+        );
+
+        return;
+      }
+
+
       const input =
-        document.getElementById("searchInput");
+        document.getElementById(
+          "searchInput"
+        );
+
+
+      const button =
+        document.getElementById(
+          "searchButton"
+        );
+
 
       const value =
         input.value.trim();
 
+
       if (!value) {
-        alert("অনুগ্রহ করে কর্মকর্তার নাম বা পদ লিখুন।");
+
+        showConnectionStatus(
+          "অনুগ্রহ করে কর্মকর্তার নাম বা পদ লিখুন।",
+          "error"
+        );
+
+        input.focus();
+
         return;
       }
 
+
+      /*
+        Search-এর wildcard নিরাপদ রাখার জন্য
+        % এবং _ সরানো হচ্ছে।
+      */
 
       const searchValue =
-        value.replace(/[%_]/g, "");
+        value.replace(
+          /[%_]/g,
+          ""
+        );
 
 
-      const { data, error } = await db
-        .from("officials")
-        .select(
-          "id, name, designation, department_id"
+      if (!searchValue) {
+
+        showConnectionStatus(
+          "অনুসন্ধানের জন্য সঠিক নাম বা পদ লিখুন।",
+          "error"
+        );
+
+        return;
+      }
+
+
+      button.disabled = true;
+      button.textContent = "খোঁজা হচ্ছে...";
+
+
+      try {
+
+        const {
+          data,
+          error
+        } = await db
+          .from("officials")
+          .select(
+            "id, name, designation, department_id"
+          )
+          .or(
+            "name.ilike.%" +
+            searchValue +
+            "%,designation.ilike.%" +
+            searchValue +
+            "%"
+          )
+          .limit(50);
+
+
+        if (error) {
+
+          console.error(
+            "Search error:",
+            error
+          );
+
+          showConnectionStatus(
+            "তথ্য খুঁজতে সমস্যা হয়েছে। Supabase permission/RLS পরীক্ষা করতে হবে।",
+            "error"
+          );
+
+          return;
+        }
+
+
+        displaySearchResults(
+          data || []
+        );
+
+
+      } catch (error) {
+
+        console.error(
+          "Unexpected search error:",
+          error
+        );
+
+        showConnectionStatus(
+          "অনুসন্ধানের সময় একটি সমস্যা হয়েছে।",
+          "error"
+        );
+
+      } finally {
+
+        button.disabled = false;
+        button.textContent = "খুঁজুন";
+      }
+    }
+
+
+    /* =========================================
+       SEARCH RESULT DISPLAY
+    ========================================== */
+
+    function displaySearchResults(
+      officers
+    ) {
+
+      const section =
+        document.getElementById(
+          "searchResultsSection"
+        );
+
+
+      const container =
+        document.getElementById(
+          "searchResults"
+        );
+
+
+      section.style.display =
+        "block";
+
+
+      if (!officers.length) {
+
+        container.innerHTML = `
+          <div class="no-result">
+            কোনো কর্মকর্তা পাওয়া যায়নি।
+          </div>
+        `;
+
+        section.scrollIntoView({
+          behavior: "smooth",
+          block: "start"
+        });
+
+        return;
+      }
+
+
+      container.innerHTML =
+        officers.map(
+          function(officer) {
+
+            const name =
+              escapeHtml(
+                officer.name ||
+                "নাম নেই"
+              );
+
+
+            const designation =
+              escapeHtml(
+                officer.designation ||
+                "পদ উল্লেখ নেই"
+              );
+
+
+            return `
+              <div class="result-card">
+
+                <div class="result-info">
+
+                  <h3>
+                    ${name}
+                  </h3>
+
+                  <p>
+                    পদ:
+                    ${designation}
+                  </p>
+
+                </div>
+
+                <div class="result-badge">
+                  প্রকাশযোগ্য তথ্য
+                </div>
+
+              </div>
+            `;
+          }
+        ).join("");
+
+
+      section.scrollIntoView({
+        behavior: "smooth",
+        block: "start"
+      });
+    }
+
+
+    /* =========================================
+       HTML নিরাপত্তা
+    ========================================== */
+
+    function escapeHtml(value) {
+
+      return String(value)
+        .replace(
+          /&/g,
+          "&amp;"
         )
-        .or(
-          "name.ilike.%" +
-          searchValue +
-          "%,designation.ilike.%" +
-          searchValue +
-          "%"
+        .replace(
+          /</g,
+          "&lt;"
+        )
+        .replace(
+          />/g,
+          "&gt;"
+        )
+        .replace(
+          /"/g,
+          "&quot;"
+        )
+        .replace(
+          /'/g,
+          "&#039;"
         );
+    }
 
 
-      if (error) {
+    /* =========================================
+       ENTER চাপলে SEARCH
+    ========================================== */
 
-        console.error("Search error:", error);
+    document
+      .getElementById("searchInput")
+      .addEventListener(
+        "keydown",
+        function(event) {
 
-        alert(
-          "তথ্য খুঁজতে সমস্যা হয়েছে।"
-        );
+          if (
+            event.key === "Enter"
+          ) {
 
-        return;
-      }
-
-
-      if (!data || data.length === 0) {
-
-        alert(
-          "কোনো কর্মকর্তা পাওয়া যায়নি।"
-        );
-
-        return;
-      }
-
-
-      let result =
-        "কর্মকর্তার তথ্য:\n\n";
-
-
-      data.forEach(
-        (officer, index) => {
-
-          result +=
-            (index + 1) +
-            ". " +
-            officer.name +
-            "\n";
-
-          result +=
-            "পদ: " +
-            (
-              officer.designation ||
-              "তথ্য নেই"
-            ) +
-            "\n\n";
+            searchOfficer();
+          }
         }
       );
 
 
-      alert(result);
-    }
+    /* =========================================
+       WEBSITE START
+    ========================================== */
+
+    document.addEventListener(
+      "DOMContentLoaded",
+      async function() {
+
+        const connected =
+          initializeSupabase();
 
 
-    // ওয়েবসাইট চালু হলে মোট কর্মকর্তা সংখ্যা আনবে
-    loadOfficialCount();
+        if (!connected) {
+          return;
+        }
+
+
+        await loadOfficialCount();
+
+
+        showConnectionStatus(
+          "Supabase সংযোগ সফল হয়েছে।",
+          "success"
+        );
+
+      }
+    );
 
   </script>
 
