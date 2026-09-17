@@ -462,7 +462,7 @@
       <div class="stats-grid">
 
         <div class="stat">
-          <strong>০</strong>
+          <strong id="officialCount">০</strong>
           <span>নিবন্ধিত কর্মকর্তা</span>
         </div>
 
@@ -617,22 +617,145 @@
 
   </footer>
 
+
+  <!-- Supabase -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
   <script>
-    function searchOfficer() {
-      const input = document.getElementById("searchInput");
-      const value = input.value.trim();
+
+    const SUPABASE_URL =
+      "https://dlfobjpzxdnnszpqowqd.supabase.co";
+
+    const SUPABASE_PUBLISHABLE_KEY =
+      "এখানে_তোমার_Publishable_Key_বসাও";import { createClient } from '@supabase/supabase-js'
+const supabaseUrl = 'https://dlfobjpzxdnnszpqowqd.supabase.co'
+const supabaseKey = process.env.SUPABASE_KEY
+const supabase = createClient(supabaseUrl, supabaseKey)
+
+
+    const db = window.supabase.createClient(
+      SUPABASE_URL,
+      SUPABASE_PUBLISHABLE_KEY
+    );
+
+
+    // বাংলা সংখ্যা দেখানোর জন্য
+    function banglaNumber(number) {
+      const digits = "০১২৩৪৫৬৭৮৯";
+
+      return String(number).replace(
+        /\d/g,
+        digit => digits[digit]
+      );
+    }
+
+
+    // মোট কর্মকর্তা সংখ্যা
+    async function loadOfficialCount() {
+
+      const { count, error } = await db
+        .from("officials")
+        .select("*", {
+          count: "exact",
+          head: true
+        });
+
+      if (error) {
+        console.error("Count error:", error);
+        return;
+      }
+
+      document.getElementById("officialCount").textContent =
+        banglaNumber(count || 0);
+    }
+
+
+    // কর্মকর্তা খোঁজা
+    async function searchOfficer() {
+
+      const input =
+        document.getElementById("searchInput");
+
+      const value =
+        input.value.trim();
 
       if (!value) {
         alert("অনুগ্রহ করে কর্মকর্তার নাম বা পদ লিখুন।");
         return;
       }
 
-      alert(
-        "অনুসন্ধান: " +
-        value +
-        "\n\nবর্তমানে কর্মকর্তা ডাটাবেস সংযুক্ত হয়নি। পরবর্তী ধাপে Supabase-এর মাধ্যমে এই ফিচার চালু করা হবে।"
+
+      const searchValue =
+        value.replace(/[%_]/g, "");
+
+
+      const { data, error } = await db
+        .from("officials")
+        .select(
+          "id, name, designation, department_id"
+        )
+        .or(
+          "name.ilike.%" +
+          searchValue +
+          "%,designation.ilike.%" +
+          searchValue +
+          "%"
+        );
+
+
+      if (error) {
+
+        console.error("Search error:", error);
+
+        alert(
+          "তথ্য খুঁজতে সমস্যা হয়েছে।"
+        );
+
+        return;
+      }
+
+
+      if (!data || data.length === 0) {
+
+        alert(
+          "কোনো কর্মকর্তা পাওয়া যায়নি।"
+        );
+
+        return;
+      }
+
+
+      let result =
+        "কর্মকর্তার তথ্য:\n\n";
+
+
+      data.forEach(
+        (officer, index) => {
+
+          result +=
+            (index + 1) +
+            ". " +
+            officer.name +
+            "\n";
+
+          result +=
+            "পদ: " +
+            (
+              officer.designation ||
+              "তথ্য নেই"
+            ) +
+            "\n\n";
+        }
       );
+
+
+      alert(result);
     }
+
+
+    // ওয়েবসাইট চালু হলে মোট কর্মকর্তা সংখ্যা আনবে
+    loadOfficialCount();
+
   </script>
 
 </body>
