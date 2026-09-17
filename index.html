@@ -7,6 +7,7 @@
   <title>আর্থিক স্বচ্ছতা | বাংলাদেশ</title>
 
   <style>
+
     * {
       margin: 0;
       padding: 0;
@@ -215,7 +216,7 @@
     }
 
     /* =========================
-       STATUS MESSAGE
+       STATUS
     ========================= */
 
     .connection-status {
@@ -586,6 +587,7 @@
         flex-direction: column;
       }
     }
+
   </style>
 </head>
 
@@ -593,7 +595,7 @@
 
   <!-- =========================
        HEADER
-  ========================== -->
+  ========================= -->
 
   <header>
 
@@ -644,7 +646,7 @@
 
     <!-- =========================
          HERO
-    ========================== -->
+    ========================= -->
 
     <section class="hero" id="home">
 
@@ -678,6 +680,7 @@
 
         <button
           id="searchButton"
+          type="button"
           onclick="searchOfficer()"
         >
           খুঁজুন
@@ -696,7 +699,7 @@
 
     <!-- =========================
          STATS
-    ========================== -->
+    ========================= -->
 
     <section class="stats">
 
@@ -747,7 +750,7 @@
 
     <!-- =========================
          SEARCH RESULTS
-    ========================== -->
+    ========================= -->
 
     <section
       class="section"
@@ -776,7 +779,7 @@
 
     <!-- =========================
          MINISTRIES
-    ========================== -->
+    ========================= -->
 
     <section
       class="section"
@@ -940,7 +943,7 @@
 
     <!-- =========================
          TRANSPARENCY
-    ========================== -->
+    ========================= -->
 
     <section
       class="transparency"
@@ -991,7 +994,7 @@
 
     <!-- =========================
          NOTICE
-    ========================== -->
+    ========================= -->
 
     <section
       class="notice"
@@ -1018,7 +1021,7 @@
 
   <!-- =========================
        FOOTER
-  ========================== -->
+  ========================= -->
 
   <footer id="login">
 
@@ -1044,95 +1047,78 @@
 
   <!-- =========================
        SUPABASE
-  ========================== -->
+  ========================= -->
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
-
   <script>
 
-    /* =========================================
+    /* =========================
        SUPABASE CONFIGURATION
-    ========================================== */
+    ========================= */
 
     const SUPABASE_URL =
       "https://dlfobjpzxdnnszpqowqd.supabase.co";
 
 
     /*
-      এখানে তোমার Supabase Publishable Key বসাও।
+      ==================================================
+      এখানে শুধু আপনার Supabase Publishable Key বসাবেন।
+      ==================================================
+    */
 
-      উদাহরণ:
-
-      const SUPABASE_PUBLISHABLE_KEY =
-        "তোমার-key";
-
-      এই key এখানে chat-এ পাঠানোর দরকার নেই।
-    *
-import { createClient } from '@supabase/supabase-js'
+    const SUPABASE_PUBLISHABLE_KEY =
+        import { createClient } from '@supabase/supabase-js'
 const supabaseUrl = 'https://dlfobjpzxdnnszpqowqd.supabase.co'
 const supabaseKey = process.env.SUPABASE_KEY
 const supabase = createClient(supabaseUrl, supabaseKey)
 
 
-    /* =========================================
-       SUPABASE CLIENTbody>
-
-  <!-- =========================
-       HEADER
-  ========================== -->
-
-  <header>
-
-    <div class="nav">
-
-      <div class="logo">
-
-        <div class="logo-mark">
-          🇧🇩
-    ========================================== */
+    /* =========================
+       SUPABASE CLIENT
+    ========================= */
 
     let db = null;
 
 
     function initializeSupabase() {
 
-      try {
+      if (
+        !window.supabase ||
+        !window.supabase.createClient
+      ) {
 
-        if (
-          !window.supabase ||
-          !window.supabase.createClient
-        ) {
-
-          showConnectionStatus(
-            "Supabase library চালু হয়নি।",
-            "error"
-          );
-
-          return false;
-        }
-
-
-        if (
-          !SUPABASE_PUBLISHABLE_KEY ||
-          SUPABASE_PUBLISHABLE_KEY ===
-          "এখানে_তোমার_Publishable_Key_বসাও"
-        ) {
-
-          showConnectionStatus(
-            "Supabase Publishable Key এখনো বসানো হয়নি।",
-            "error"
-          );
-
-          return false;
-        }
-
-
-        db = window.supabase.createClient(
-          SUPABASE_URL,
-          SUPABASE_PUBLISHABLE_KEY
+        showConnectionStatus(
+          "Supabase library চালু হয়নি।",
+          "error"
         );
 
+        return false;
+      }
+
+
+      if (
+        !SUPABASE_PUBLISHABLE_KEY ||
+        SUPABASE_PUBLISHABLE_KEY ===
+        "এখানে_আপনার_Publishable_Key_বসাবেন"
+      ) {
+
+        showConnectionStatus(
+          "Supabase Publishable Key এখনো বসানো হয়নি।",
+          "error"
+        );
+
+        return false;
+      }
+
+
+      try {
+
+        db =
+          window.supabase.createClient(
+            SUPABASE_URL,
+            SUPABASE_PUBLISHABLE_KEY
+          );
 
         return true;
 
@@ -1153,9 +1139,9 @@ const supabase = createClient(supabaseUrl, supabaseKey)
     }
 
 
-    /* =========================================
+    /* =========================
        STATUS MESSAGE
-    ========================================== */
+    ========================= */
 
     function showConnectionStatus(
       message,
@@ -1171,7 +1157,10 @@ const supabase = createClient(supabaseUrl, supabaseKey)
         return;
       }
 
-      element.textContent = message;
+
+      element.textContent =
+        message;
+
 
       element.className =
         "connection-status " +
@@ -1179,27 +1168,30 @@ const supabase = createClient(supabaseUrl, supabaseKey)
     }
 
 
-    /* =========================================
+    /* =========================
        বাংলা সংখ্যা
-    ========================================== */
+    ========================= */
 
     function banglaNumber(number) {
 
       const digits =
         "০১২৩৪৫৬৭৮৯";
 
+
       return String(number).replace(
         /\d/g,
         function(digit) {
+
           return digits[digit];
+
         }
       );
     }
 
 
-    /* =========================================
-       মোট কর্মকর্তা সংখ্যা
-    ========================================== */
+    /* =========================
+       OFFICIAL COUNT
+    ========================= */
 
     async function loadOfficialCount() {
 
@@ -1211,12 +1203,13 @@ const supabase = createClient(supabaseUrl, supabaseKey)
       const {
         count,
         error
-      } = await db
-        .from("officials")
-        .select("*", {
-          count: "exact",
-          head: true
-        });
+      } =
+        await db
+          .from("officials")
+          .select("*", {
+            count: "exact",
+            head: true
+          });
 
 
       if (error) {
@@ -1225,6 +1218,7 @@ const supabase = createClient(supabaseUrl, supabaseKey)
           "Official count error:",
           error
         );
+
 
         showConnectionStatus(
           "কর্মকর্তার সংখ্যা আনা যায়নি। Supabase RLS/permission পরীক্ষা করতে হবে।",
@@ -1244,9 +1238,9 @@ const supabase = createClient(supabaseUrl, supabaseKey)
     }
 
 
-    /* =========================================
-       কর্মকর্তা অনুসন্ধান
-    ========================================== */
+    /* =========================
+       SEARCH OFFICER
+    ========================= */
 
     async function searchOfficer() {
 
@@ -1290,11 +1284,6 @@ const supabase = createClient(supabaseUrl, supabaseKey)
       }
 
 
-      /*
-        Search-এর wildcard নিরাপদ রাখার জন্য
-        % এবং _ সরানো হচ্ছে।
-      */
-
       const searchValue =
         value.replace(
           /[%_]/g,
@@ -1305,7 +1294,7 @@ const supabase = createClient(supabaseUrl, supabaseKey)
       if (!searchValue) {
 
         showConnectionStatus(
-          "অনুসন্ধানের জন্য সঠিক নাম বা পদ লিখুন।",
+          "সঠিক নাম বা পদ লিখুন।",
           "error"
         );
 
@@ -1313,8 +1302,12 @@ const supabase = createClient(supabaseUrl, supabaseKey)
       }
 
 
-      button.disabled = true;
-      button.textContent = "খোঁজা হচ্ছে...";
+      button.disabled =
+        true;
+
+
+      button.textContent =
+        "খোঁজা হচ্ছে...";
 
 
       try {
@@ -1322,19 +1315,20 @@ const supabase = createClient(supabaseUrl, supabaseKey)
         const {
           data,
           error
-        } = await db
-          .from("officials")
-          .select(
-            "id, name, designation, department_id"
-          )
-          .or(
-            "name.ilike.%" +
-            searchValue +
-            "%,designation.ilike.%" +
-            searchValue +
-            "%"
-          )
-          .limit(50);
+        } =
+          await db
+            .from("officials")
+            .select(
+              "id, name, designation, department_id"
+            )
+            .or(
+              "name.ilike.%" +
+              searchValue +
+              "%,designation.ilike.%" +
+              searchValue +
+              "%"
+            )
+            .limit(50);
 
 
         if (error) {
@@ -1344,8 +1338,9 @@ const supabase = createClient(supabaseUrl, supabaseKey)
             error
           );
 
+
           showConnectionStatus(
-            "তথ্য খুঁজতে সমস্যা হয়েছে। Supabase permission/RLS পরীক্ষা করতে হবে।",
+            "তথ্য খুঁজতে সমস্যা হয়েছে। Supabase RLS/permission পরীক্ষা করতে হবে।",
             "error"
           );
 
@@ -1365,22 +1360,27 @@ const supabase = createClient(supabaseUrl, supabaseKey)
           error
         );
 
+
         showConnectionStatus(
-          "অনুসন্ধানের সময় একটি সমস্যা হয়েছে।",
+          "অনুসন্ধানের সময় সমস্যা হয়েছে।",
           "error"
         );
 
       } finally {
 
-        button.disabled = false;
-        button.textContent = "খুঁজুন";
+        button.disabled =
+          false;
+
+
+        button.textContent =
+          "খুঁজুন";
       }
     }
 
 
-    /* =========================================
+    /* =========================
        SEARCH RESULT DISPLAY
-    ========================================== */
+    ========================= */
 
     function displaySearchResults(
       officers
@@ -1410,57 +1410,60 @@ const supabase = createClient(supabaseUrl, supabaseKey)
           </div>
         `;
 
+
         section.scrollIntoView({
           behavior: "smooth",
           block: "start"
         });
+
 
         return;
       }
 
 
       container.innerHTML =
-        officers.map(
-          function(officer) {
+        officers
+          .map(
+            function(officer) {
 
-            const name =
-              escapeHtml(
-                officer.name ||
-                "নাম নেই"
-              );
-
-
-            const designation =
-              escapeHtml(
-                officer.designation ||
-                "পদ উল্লেখ নেই"
-              );
+              const name =
+                escapeHtml(
+                  officer.name ||
+                  "নাম নেই"
+                );
 
 
-            return `
-              <div class="result-card">
+              const designation =
+                escapeHtml(
+                  officer.designation ||
+                  "পদ উল্লেখ নেই"
+                );
 
-                <div class="result-info">
 
-                  <h3>
-                    ${name}
-                  </h3>
+              return `
+                <div class="result-card">
 
-                  <p>
-                    পদ:
-                    ${designation}
-                  </p>
+                  <div class="result-info">
+
+                    <h3>
+                      ${name}
+                    </h3>
+
+                    <p>
+                      পদ: ${designation}
+                    </p>
+
+                  </div>
+
+                  <div class="result-badge">
+                    প্রকাশযোগ্য তথ্য
+                  </div>
 
                 </div>
-
-                <div class="result-badge">
-                  প্রকাশযোগ্য তথ্য
-                </div>
-
-              </div>
-            `;
-          }
-        ).join("");
+              `;
+            }
+          )
+          .join("");
 
 
       section.scrollIntoView({
@@ -1470,29 +1473,34 @@ const supabase = createClient(supabaseUrl, supabaseKey)
     }
 
 
-    /* =========================================
-       HTML নিরাপত্তা
-    ========================================== */
+    /* =========================
+       HTML SECURITY
+    ========================= */
 
     function escapeHtml(value) {
 
       return String(value)
+
         .replace(
           /&/g,
           "&amp;"
         )
+
         .replace(
           /</g,
           "&lt;"
         )
+
         .replace(
           />/g,
           "&gt;"
         )
+
         .replace(
           /"/g,
           "&quot;"
         )
+
         .replace(
           /'/g,
           "&#039;"
@@ -1500,12 +1508,14 @@ const supabase = createClient(supabaseUrl, supabaseKey)
     }
 
 
-    /* =========================================
-       ENTER চাপলে SEARCH
-    ========================================== */
+    /* =========================
+       ENTER = SEARCH
+    ========================= */
 
     document
-      .getElementById("searchInput")
+      .getElementById(
+        "searchInput"
+      )
       .addEventListener(
         "keydown",
         function(event) {
@@ -1515,14 +1525,16 @@ const supabase = createClient(supabaseUrl, supabaseKey)
           ) {
 
             searchOfficer();
+
           }
+
         }
       );
 
 
-    /* =========================================
+    /* =========================
        WEBSITE START
-    ========================================== */
+    ========================= */
 
     document.addEventListener(
       "DOMContentLoaded",
