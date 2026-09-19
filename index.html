@@ -1572,30 +1572,24 @@
     ========================= */
 
     document.addEventListener(
-      "DOMContentLoaded",
-      async function() {
+  "DOMContentLoaded",
+  async function() {
 
-        const connected =
-          initializeSupabase();
+    const connected =
+      initializeSupabase();
 
+    if (!connected) {
+      return;
+    }
 
-        if (!connected) {
-          return;
-        }
+    await loadOfficialCount();
 
+    await loadFinancialProfileCount();
 
-        await loadOfficialCount();
-
-
-        showConnectionStatus(
-          "Supabase সংযোগ সফল হয়েছে।",
-          "success"
-        );
-
-      }
+    showConnectionStatus(
+      "Supabase সংযোগ সফল হয়েছে।",
+      "success"
     );
 
-  </script>
-
-</body>
-</html>
+  }
+);
