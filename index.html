@@ -1494,226 +1494,134 @@
 
     async function searchOfficer() {
 
-      if (!db) {
+  if (!db) {
+    showConnectionStatus(
+      currentLanguage === "bn"
+        ? "Supabase এখনো সংযুক্ত নয়। Publishable Key পরীক্ষা করুন।"
+        : "Supabase is not connected yet. Check the Publishable Key.",
+      "error"
+    );
+    return;
+  }
 
-        showConnectionStatus(
-          currentLanguage === "bn"
-            ? "Supabase এখনো সংযুক্ত নয়। Publishable Key পরীক্ষা করুন।"
-            : "Supabase is not connected yet. Check the Publishable Key.",
-          "error"
-        );
+  const input = document.getElementById("searchInput");
+  const button = document.getElementById("searchButton");
+  const value = input.value.trim();
 
-        return;
-      }
+  if (!value) {
+    showConnectionStatus(
+      currentLanguage === "bn"
+        ? "অনুগ্রহ করে কর্মকর্তার নাম বা পদ লিখুন।"
+        : "Please enter an official's name or designation.",
+      "error"
+    );
+    input.focus();
+    return;
+  }
 
+  const searchValue = value.replace(/[%_]/g, "");
 
-      const input =
-        document.getElementById(
-          "searchInput"
-        );
+  button.disabled = true;
+  button.textContent =
+    currentLanguage === "bn"
+      ? "খোঁজা হচ্ছে..."
+      : "Searching...";
 
-      const button =
-        document.getElementById(
-          "searchButton"
-        );
+  showConnectionStatus("");
 
+  try {
 
-      const value =
-        input.value.trim();
+    const result = await db
+      .from("officials")
+      .select("id, name, designation, department_id")
+      .or(
+        "name.ilike.%" +
+        searchValue +
+        "%,designation.ilike.%" +
+        searchValue +
+        "%"
+      )
+      .limit(50);
 
+    if (result.error) {
+      console.error("Official search error:", result.error);
 
-      if (!value) {
-
-        showConnectionStatus(
-          currentLanguage === "bn"
-            ? "অনুগ্রহ করে কর্মকর্তার নাম বা পদ লিখুন।"
-            : "Please enter an official's name or designation.",
-          "error"
-        );
-
-        input.focus();
-
-        return;
-      }
-
-
-      /*
-        % এবং _ wildcard সরিয়ে দেওয়া হচ্ছে।
-        এতে user input দিয়ে ইচ্ছামতো SQL pattern
-        তৈরি করা যাবে না।
-      */
-
-      const searchValue =
-        value.replace(/[%_]/g, "");
-
-
-      if (!searchValue) {
-        return;
-      }
-
-
-      button.disabled = true;
-
-
-      button.textContent =
+      showConnectionStatus(
         currentLanguage === "bn"
-          ? "খোঁজা হচ্ছে..."
-          : "Searching...";
+          ? "কর্মকর্তার তথ্য খুঁজতে সমস্যা হয়েছে।"
+          : "There was a problem searching officials.",
+        "error"
+      );
 
+      return;
+    }
 
-      showConnectionStatus("");
+    const officers = result.data || [];
 
+    if (!officers.length) {
+      displaySearchResults([]);
+      return;
+    }
 
-      try {
+    /*
+      প্রতিটি কর্মকর্তার জন্য আলাদাভাবে
+      financial_profiles থেকে তথ্য আনা হচ্ছে।
+      এতে profile না দেখানোর সমস্যা সহজে ধরা যাবে।
+    */
 
-        /* -----------------------------------------
-           Officials
-           ----------------------------------------- */
+    for (const officer of officers) {
 
-        const result =
-          await db
-            .from("officials")
-            .select(
-              "id, name, designation, department_id"
-            )
-            .or(
-              "name.ilike.%" +
-              searchValue +
-              "%,designation.ilike.%" +
-              searchValue +
-              "%"
-            )
-            .limit(50);
+      const profileResult = await db
+        .from("financial_profiles")
+        .select(
+          "id, official_id, income, assets_value, liabilities_value, report_year, verification_status, source, source_url"
+        )
+        .eq("official_id", officer.id)
+        .maybeSingle();
 
-
-        if (result.error) {
-
-          console.error(
-            "Official search error:",
-            result.error
-          );
-
-          showConnectionStatus(
-            currentLanguage === "bn"
-              ? "তথ্য খুঁজতে সমস্যা হয়েছে।"
-              : "There was a problem searching the information.",
-            "error"
-          );
-
-          return;
-        }
-
-
-        const officers =
-          result.data || [];
-
-
-        /* -----------------------------------------
-           Financial profiles
-           ----------------------------------------- */
-
-        const officialIds =
-          officers.map(
-            function(officer) {
-              return officer.id;
-            }
-          );
-
-
-        let profiles = [];
-
-
-        if (officialIds.length) {
-
-          const profileResult =
-            await db
-              .from("financial_profiles")
-              .select(
-                "id, official_id, income, assets_value, liabilities_value, report_year, verification_status, source, source_url"
-              )
-              .in(
-                "official_id",
-                officialIds
-              );
-
-
-          if (profileResult.error) {
-
-            console.error(
-              "Financial profile search error:",
-              profileResult.error
-            );
-
-          } else {
-
-            profiles =
-              profileResult.data || [];
-          }
-        }
-
-
-        /* -----------------------------------------
-           Match profile -> official
-           ----------------------------------------- */
-
-        const profileMap = {};
-
-
-        profiles.forEach(
-          function(profile) {
-
-            profileMap[
-              profile.official_id
-            ] = profile;
-
-          }
-        );
-
-
-        officers.forEach(
-          function(officer) {
-
-            officer.financial_profile =
-              profileMap[
-                officer.id
-              ] || null;
-
-          }
-        );
-
-
-        displaySearchResults(
-          officers
-        );
-
-
-      } catch (error) {
+      if (profileResult.error) {
 
         console.error(
-          "Unexpected search error:",
-          error
+          "Financial profile error for official:",
+          officer.id,
+          profileResult.error
         );
 
+        officer.financial_profile = null;
 
-        showConnectionStatus(
-          currentLanguage === "bn"
-            ? "অনুসন্ধানের সময় সমস্যা হয়েছে।"
-            : "An error occurred during the search.",
-          "error"
-        );
+      } else {
 
-
-      } finally {
-
-        button.disabled = false;
-
-
-        button.textContent =
-          currentLanguage === "bn"
-            ? "খুঁজুন"
-            : "Search";
+        officer.financial_profile =
+          profileResult.data || null;
       }
     }
+
+    displaySearchResults(officers);
+
+  } catch (error) {
+
+    console.error(
+      "Unexpected search error:",
+      error
+    );
+
+    showConnectionStatus(
+      currentLanguage === "bn"
+        ? "অনুসন্ধানের সময় সমস্যা হয়েছে।"
+        : "An error occurred during the search.",
+      "error"
+    );
+
+  } finally {
+
+    button.disabled = false;
+
+    button.textContent =
+      currentLanguage === "bn"
+        ? "খুঁজুন"
+        : "Search";
+  }
+}
 
 
     /* =========================================================
