@@ -1226,12 +1226,52 @@
       }
 
 
-      document.getElementById(
+            document.getElementById(
         "officialCount"
       ).textContent =
         banglaNumber(
           count || 0
         );
+    }
+
+
+    /* =========================
+       FINANCIAL PROFILE COUNT
+    ========================= */
+
+    async function loadFinancialProfileCount() {
+
+      if (!db) {
+        return;
+      }
+
+      const { count, error } =
+        await db
+          .from("financial_profiles")
+          .select("*", {
+            count: "exact",
+            head: true
+          });
+
+      if (error) {
+        console.error(
+          "Financial profile count error:",
+          error
+        );
+        return;
+      }
+
+      const element =
+        document.getElementById(
+          "profileCount"
+        );
+
+      if (element) {
+        element.textContent =
+          banglaNumber(
+            count || 0
+          );
+      }
     }
 
 
@@ -1256,8 +1296,6 @@
         document.getElementById(
           "searchInput"
         );
-
-
       const button =
         document.getElementById(
           "searchButton"
