@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="bn">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -56,7 +57,7 @@
       background: white;
       padding: 20px;
       border-radius: 16px;
-      box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
       margin-bottom: 20px;
     }
 
@@ -101,6 +102,10 @@
 
     .result h3 {
       margin-top: 0;
+    }
+
+    .result p {
+      margin: 8px 0;
     }
 
     .tag {
@@ -166,7 +171,7 @@
         <input
           id="agricultureSearch"
           type="search"
-          placeholder="যেমন: কৃষি সম্প্রসারণ কর্মকর্তা"
+          placeholder="যেমন: আব্দুল করিম অপু"
         >
 
         <button onclick="searchAgriculture()">
@@ -215,6 +220,7 @@
 
   </footer>
 
+
   <script>
 
     async function searchAgriculture() {
@@ -247,67 +253,111 @@
 
       try {
 
-        const { data: departments, error: departmentError } =
-  await supabaseClient
-    .from("departments")
-    .select("id")
-    .eq("ministry_id", 1);
+        /*
+          STEP 1:
+          কৃষি মন্ত্রণালয়ের সব Department ID নেওয়া
+        */
 
-if (departmentError) {
-  throw departmentError;
-}
+        const {
+          data: departments,
+          error: departmentError
+        } = await supabaseClient
+          .from("departments")
+          .select("id")
+          .eq("ministry_id", 1);
 
-const departmentIds = departments.map(d => d.id);
+        if (departmentError) {
+          throw departmentError;
+        }
 
-const { data: officials, error: officialsError } =
-  await supabaseClient
-    .from("officials")
-    .select("*")
-    .in("department_id", departmentIds)
-    .or(
-      `name.ilike.%${keyword}%,designation.ilike.%${keyword}%`
-    )
-    .limit(20);
+        const departmentIds =
+          departments.map(department => department.id);
 
-if (officialsError) {
-  throw officialsError;
-}
 
-const departmentIdsForOfficials = [
-  ...new Set(
-    officials
-      .map(official => official.department_id)
-      .filter(id => id !== null)
-  )
-];
+        /*
+          STEP 2:
+          Officials table থেকে কর্মকর্তা খোঁজা
+        */
 
-let departmentsMap = {};
+        const {
+          data: officials,
+          error: officialsError
+        } = await supabaseClient
+          .from("officials")
+          .select("*")
+          .in("department_id", departmentIds)
+          .or(
+            `name.ilike.%${keyword}%,designation.ilike.%${keyword}%`
+          )
+          .limit(20);
 
-if (departmentIdsForOfficials.length > 0) {
+        if (officialsError) {
+          throw officialsError;
+        }
 
-  const { data: departments, error: departmentsError } =
-    await supabaseClient
-      .from("departments")
-      .select("id, name, district, upazila")
-      .in("id", departmentIdsForOfficials);
 
-  if (departmentsError) {
-    throw departmentsError;
-  }
+        /*
+          STEP 3:
+          পাওয়া কর্মকর্তাদের Department ID সংগ্রহ
+        */
 
-  departmentsMap = Object.fromEntries(
-    departments.map(department => [
-      department.id,
-      department
-    ])
-  );
-}
+        const departmentIdsForOfficials = [
+          ...new Set(
+            officials
+              .map(official => official.department_id)
+              .filter(id => id !== null)
+          )
+        ];
 
-const data = officials.map(official => ({
-  ...official,
-  departments:
-    departmentsMap[official.department_id] || null
-}));
+
+        /*
+          STEP 4:
+          Department-এর বিস্তারিত তথ্য আনা
+        */
+
+        let departmentsMap = {};
+
+        if (departmentIdsForOfficials.length > 0) {
+
+          const {
+            data: departmentDetails,
+            error: departmentsError
+          } = await supabaseClient
+            .from("departments")
+            .select("id, name, district, upazila")
+            .in("id", departmentIdsForOfficials);
+
+          if (departmentsError) {
+            throw departmentsError;
+          }
+
+          departmentsMap =
+            Object.fromEntries(
+              departmentDetails.map(department => [
+                department.id,
+                department
+              ])
+            );
+        }
+
+
+        /*
+          STEP 5:
+          Officials + Department information একসাথে করা
+        */
+
+        const data = officials.map(official => ({
+          ...official,
+
+          departments:
+            departmentsMap[official.department_id] || null
+        }));
+
+
+        /*
+          কোনো কর্মকর্তা না পাওয়া গেলে
+        */
+
         if (!data || data.length === 0) {
 
           results.innerHTML = `
@@ -319,64 +369,80 @@ const data = officials.map(official => ({
           return;
         }
 
+
+        /*
+          STEP 6:
+          Search Result দেখানো
+        */
+
         results.innerHTML = data.map(official => `
 
           <div class="result">
 
             <h3>
-              ${escapeHtml(official.name || "নাম নেই")}
+              ${escapeHtml(
+                official.name || "নাম নেই"
+              )}
             </h3>
 
             <p>
-  <strong>পদবী:</strong>
-  ${escapeHtml(
-    official.designation || "তথ্য নেই"
-  )}
-</p>
+              <strong>পদবী:</strong>
+              ${escapeHtml(
+                official.designation || "তথ্য নেই"
+              )}
+            </p>
 
-<p>
-  <strong>দপ্তর:</strong>
-  ${escapeHtml(
-    official.departments?.name || "তথ্য নেই"
-  )}
-</p>
+            <p>
+              <strong>দপ্তর:</strong>
+              ${escapeHtml(
+                official.departments?.name || "তথ্য নেই"
+              )}
+            </p>
 
-<p>
-  <strong>জেলা:</strong>
-  ${escapeHtml(
-    official.departments?.district || "তথ্য নেই"
-  )}
-</p>
+            <p>
+              <strong>জেলা:</strong>
+              ${escapeHtml(
+                official.departments?.district || "তথ্য নেই"
+              )}
+            </p>
 
-<p>
-  <strong>উপজেলা:</strong>
-  ${escapeHtml(
-    official.departments?.upazila || "তথ্য নেই"
-  )}
-</p>
+            <p>
+              <strong>উপজেলা:</strong>
+              ${escapeHtml(
+                official.departments?.upazila || "তথ্য নেই"
+              )}
+            </p>
 
-<span class="tag">
-  কৃষি মন্ত্রণালয়
-</span>
+            <span class="tag">
+              কৃষি মন্ত্রণালয়
+            </span>
 
           </div>
 
         `).join("");
+
 
       } catch (error) {
 
         console.error(error);
 
         results.innerHTML = `
-  <div class="empty">
-    সমস্যা হয়েছে:<br>
-    ${escapeHtml(error.message || String(error))}
-  </div>
-`;
+          <div class="empty">
+            সমস্যা হয়েছে:<br>
+            ${escapeHtml(
+              error.message || String(error)
+            )}
+          </div>
+        `;
 
       }
 
     }
+
+
+    /*
+      নিরাপদভাবে HTML দেখানোর জন্য
+    */
 
     function escapeHtml(value) {
 
@@ -388,6 +454,11 @@ const data = officials.map(official => ({
         .replace(/'/g, "&#039;");
 
     }
+
+
+    /*
+      Enter চাপলেও Search হবে
+    */
 
     document
       .getElementById("agricultureSearch")
@@ -405,4 +476,5 @@ const data = officials.map(official => ({
   </script>
 
 </body>
+
 </html>
