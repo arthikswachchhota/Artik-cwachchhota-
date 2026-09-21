@@ -1208,7 +1208,7 @@
       "https://dlfobjpzxdnnszpqowqd.supabase.co";
 
     const SUPABASE_PUBLISHABLE_KEY =
-     
+     "sb_publishable_Rb2oZZ6XzXFZSpkNSRgqLQ_njWY-TtY"
 
     let db = null;
 
@@ -1942,297 +1942,634 @@ async function searchOfficer() {
        ========================================================= */
 
     function displaySearchResults(
-      officers
-    ) {
+  officers
+) {
 
-      const section =
-        document.getElementById(
-          "searchResultsSection"
-        );
+  const section =
+    document.getElementById(
+      "searchResultsSection"
+    );
 
-      const container =
-        document.getElementById(
-          "searchResults"
-        );
+  const container =
+    document.getElementById(
+      "searchResults"
+    );
 
-      section.style.display =
-        "block";
+  section.style.display =
+    "block";
 
-      if (!officers.length) {
+  if (!officers.length) {
 
-        container.innerHTML = `
-          <div class="no-result">
-            ${
-              currentLanguage === "bn"
-                ? "কোনো কর্মকর্তা পাওয়া যায়নি।"
-                : "No officials were found."
-            }
-          </div>
-        `;
+    container.innerHTML = `
+      <div class="no-result">
+        ${
+          currentLanguage === "bn"
+            ? "কোনো কর্মকর্তা পাওয়া যায়নি।"
+            : "No officials were found."
+        }
+      </div>
+    `;
 
-        section.scrollIntoView({
-          behavior: "smooth",
-          block: "start"
-        });
+    section.scrollIntoView({
+      behavior: "smooth",
+      block: "start"
+    });
 
-        return;
-      }
+    return;
+  }
 
-      container.innerHTML =
-        officers
-          .map(
-            function(officer) {
+  container.innerHTML =
+    officers
+      .map(
+        function(officer) {
 
-              const name =
+          const name =
+            escapeHtml(
+              officer.name ||
+              (
+                currentLanguage === "bn"
+                  ? "নাম নেই"
+                  : "Name unavailable"
+              )
+            );
+
+          const designation =
+            escapeHtml(
+              officer.designation ||
+              (
+                currentLanguage === "bn"
+                  ? "পদ উল্লেখ নেই"
+                  : "Designation unavailable"
+              )
+            );
+
+          const records =
+            Array.isArray(
+              officer.financial_records
+            )
+              ? officer.financial_records
+              : [];
+
+          const profile =
+            officer.financial_profile;
+
+          let financialHtml = "";
+
+          /*
+            নতুন financial_records থাকলে
+            সেটিকেই প্রধান তথ্য হিসেবে দেখানো হবে।
+          */
+
+          if (records.length) {
+
+            const incomeRecords =
+              records.filter(
+                function(record) {
+                  return record.type === "income";
+                }
+              );
+
+            const assetRecords =
+              records.filter(
+                function(record) {
+                  return record.type === "asset";
+                }
+              );
+
+            const liabilityRecords =
+              records.filter(
+                function(record) {
+                  return record.type === "liability";
+                }
+              );
+
+            function renderRecord(
+              record
+            ) {
+
+              const verification =
+                verificationInfo(
+                  record.verification_status
+                );
+
+              const source =
                 escapeHtml(
-                  officer.name ||
+                  record.source ||
                   (
                     currentLanguage === "bn"
-                      ? "নাম নেই"
-                      : "Name unavailable"
+                      ? "উৎস উল্লেখ নেই"
+                      : "Source unavailable"
                   )
                 );
 
-              const designation =
-                escapeHtml(
-                  officer.designation ||
-                  (
-                    currentLanguage === "bn"
-                      ? "পদ উল্লেখ নেই"
-                      : "Designation unavailable"
-                  )
+              const sourceUrl =
+                safeSourceUrl(
+                  record.source_url
                 );
 
-              const profile =
-                officer.financial_profile;
-
-              let financialHtml = "";
-
-              if (profile) {
-
-                const verification =
-                  verificationInfo(
-                    profile.verification_status
-                  );
-
-                const source =
-                  escapeHtml(
-                    profile.source ||
-                    (
-                      currentLanguage === "bn"
-                        ? "উৎস উল্লেখ নেই"
-                        : "Source unavailable"
-                    )
-                  );
-
-                const sourceUrl =
-                  safeSourceUrl(
-                    profile.source_url
-                  );
-
-                const sourceLinkHtml =
-                  sourceUrl
-                    ? `
-                      <a
-                        class="source-link"
-                        href="${escapeHtml(sourceUrl)}"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                      >
-                        ${
-                          currentLanguage === "bn"
-                            ? "উৎসের লিংক খুলুন"
-                            : "Open source link"
-                        }
-                      </a>
-                    `
-                    : (
-                        currentLanguage === "bn"
-                          ? "লিংক নেই"
-                          : "No link"
-                      );
-
-                financialHtml = `
-
-                  <div class="financial-profile">
-
-                    <div class="financial-title">
+              const sourceLinkHtml =
+                sourceUrl
+                  ? `
+                    <a
+                      class="source-link"
+                      href="${escapeHtml(sourceUrl)}"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
                       ${
                         currentLanguage === "bn"
-                          ? "আর্থিক প্রোফাইল"
-                          : "Financial profile"
+                          ? "উৎসের লিংক খুলুন"
+                          : "Open source link"
                       }
-                    </div>
+                    </a>
+                  `
+                  : (
+                      currentLanguage === "bn"
+                        ? "লিংক নেই"
+                        : "No link"
+                    );
 
-                    <div class="financial-grid">
+              const publicationDate =
+                record.publication_date
+                  ? escapeHtml(
+                      record.publication_date
+                    )
+                  : (
+                      currentLanguage === "bn"
+                        ? "উল্লেখ নেই"
+                        : "Not available"
+                    );
 
-                      <div class="financial-item">
-                        <span class="financial-label">
-                          ${
+              const reportYear =
+                formatYear(
+                  record.report_year
+                );
+
+              const assetType =
+                escapeHtml(
+                  record.asset_type ||
+                  (
+                    currentLanguage === "bn"
+                      ? "সাধারণ সম্পদ"
+                      : "General asset"
+                  )
+                );
+
+              return `
+                <div class="financial-item">
+
+                  <span class="financial-label">
+
+                    ${
+                      record.type === "income"
+                        ? (
                             currentLanguage === "bn"
                               ? "আয়"
                               : "Income"
-                          }
-                        </span>
-
-                        <strong class="financial-value">
-                          ${formatMoney(profile.income)}
-                        </strong>
-                      </div>
-
-                      <div class="financial-item">
-                        <span class="financial-label">
-                          ${
+                          )
+                        : record.type === "asset"
+                        ? (
                             currentLanguage === "bn"
-                              ? "সম্পদের মূল্য"
-                              : "Asset value"
-                          }
-                        </span>
-
-                        <strong class="financial-value">
-                          ${formatMoney(profile.assets_value)}
-                        </strong>
-                      </div>
-
-                      <div class="financial-item">
-                        <span class="financial-label">
-                          ${
+                              ? "সম্পদ"
+                              : "Asset"
+                          )
+                        : (
                             currentLanguage === "bn"
                               ? "দায়"
-                              : "Liabilities"
-                          }
-                        </span>
-
-                        <strong class="financial-value">
-                          ${formatMoney(profile.liabilities_value)}
-                        </strong>
-                      </div>
-
-                      <div class="financial-item">
-                        <span class="financial-label">
-                          ${
-                            currentLanguage === "bn"
-                              ? "রিপোর্টের বছর"
-                              : "Report year"
-                          }
-                        </span>
-
-                        <strong class="financial-value">
-                          ${formatYear(profile.report_year)}
-                        </strong>
-                      </div>
-
-                    </div>
-
-                    <div class="financial-meta">
-
-                      <div>
-                        ${
-                          currentLanguage === "bn"
-                            ? "যাচাইয়ের অবস্থা:"
-                            : "Verification status:"
-                        }
-
-                        <span class="${verification.className}">
-                          ${verification.text}
-                        </span>
-                      </div>
-
-                      <div>
-                        ${
-                          currentLanguage === "bn"
-                            ? "তথ্যের উৎস:"
-                            : "Information source:"
-                        }
-
-                        <strong>
-                          ${source}
-                        </strong>
-                      </div>
-
-                      <div>
-                        ${
-                          currentLanguage === "bn"
-                            ? "উৎসের লিংক:"
-                            : "Source link:"
-                        }
-
-                        ${sourceLinkHtml}
-                      </div>
-
-                    </div>
-
-                  </div>
-                `;
-
-              } else {
-
-                financialHtml = `
-
-                  <div class="no-profile">
-
-                    ${
-                      currentLanguage === "bn"
-                        ? "এই কর্মকর্তার জন্য এখনো আর্থিক প্রোফাইলের তথ্য যুক্ত করা হয়নি।"
-                        : "No financial profile has been added for this official yet."
+                              : "Liability"
+                          )
                     }
 
-                  </div>
+                  </span>
 
-                `;
-              }
+                  <strong class="financial-value">
+                    ${formatMoney(record.amount)}
+                  </strong>
 
-              return `
+                  ${
+                    record.type === "asset"
+                      ? `
+                        <div
+                          style="
+                            margin-top:6px;
+                            color:var(--muted);
+                            font-size:12px;
+                          "
+                        >
+                          ${
+                            currentLanguage === "bn"
+                              ? "ধরন: "
+                              : "Type: "
+                          }
 
-                <article class="result-card">
+                          ${assetType}
+                        </div>
+                      `
+                      : ""
+                  }
 
-                  <div class="result-top">
+                  <div
+                    style="
+                      margin-top:10px;
+                      color:var(--muted);
+                      font-size:12px;
+                      line-height:1.7;
+                    "
+                  >
 
-                    <div class="result-info">
-
-                      <h3>
-                        ${name}
-                      </h3>
-
-                      <p>
-                        ${
-                          currentLanguage === "bn"
-                            ? "পদ: "
-                            : "Designation: "
-                        }
-
-                        ${designation}
-                      </p>
-
-                    </div>
-
-                    <div class="result-badge">
-
+                    <div>
                       ${
                         currentLanguage === "bn"
-                          ? "প্রকাশযোগ্য তথ্য"
-                          : "Publicly publishable information"
+                          ? "রিপোর্টের বছর: "
+                          : "Report year: "
                       }
 
+                      <strong>
+                        ${reportYear}
+                      </strong>
+                    </div>
+
+                    <div>
+                      ${
+                        currentLanguage === "bn"
+                          ? "প্রকাশের তারিখ: "
+                          : "Publication date: "
+                      }
+
+                      ${publicationDate}
+                    </div>
+
+                    <div>
+                      ${
+                        currentLanguage === "bn"
+                          ? "যাচাই: "
+                          : "Verification: "
+                      }
+
+                      <span class="${verification.className}">
+                        ${verification.text}
+                      </span>
+                    </div>
+
+                    <div>
+                      ${
+                        currentLanguage === "bn"
+                          ? "উৎস: "
+                          : "Source: "
+                      }
+
+                      <strong>
+                        ${source}
+                      </strong>
+                    </div>
+
+                    <div>
+                      ${
+                        currentLanguage === "bn"
+                          ? "উৎসের লিংক: "
+                          : "Source link: "
+                      }
+
+                      ${sourceLinkHtml}
                     </div>
 
                   </div>
 
-                  ${financialHtml}
-
-                </article>
-
+                </div>
               `;
-
             }
-          )
-          .join("");
 
-      section.scrollIntoView({
-        behavior: "smooth",
-        block: "start"
-      });
-    }
+            financialHtml = `
+
+              <div class="financial-profile">
+
+                <div class="financial-title">
+                  ${
+                    currentLanguage === "bn"
+                      ? "আর্থিক তথ্য"
+                      : "Financial information"
+                  }
+                </div>
+
+                ${
+                  incomeRecords.length
+                    ? `
+                      <div
+                        style="
+                          margin-bottom:12px;
+                          color:var(--dark-green);
+                          font-weight:900;
+                        "
+                      >
+                        ${
+                          currentLanguage === "bn"
+                            ? "আয়"
+                            : "Income"
+                        }
+                      </div>
+
+                      <div class="financial-grid">
+
+                        ${incomeRecords
+                          .map(renderRecord)
+                          .join("")}
+
+                      </div>
+                    `
+                    : ""
+                }
+
+                ${
+                  assetRecords.length
+                    ? `
+                      <div
+                        style="
+                          margin-top:18px;
+                          margin-bottom:12px;
+                          color:var(--dark-green);
+                          font-weight:900;
+                        "
+                      >
+                        ${
+                          currentLanguage === "bn"
+                            ? "সম্পদ"
+                            : "Assets"
+                        }
+                      </div>
+
+                      <div class="financial-grid">
+
+                        ${assetRecords
+                          .map(renderRecord)
+                          .join("")}
+
+                      </div>
+                    `
+                    : ""
+                }
+
+                ${
+                  liabilityRecords.length
+                    ? `
+                      <div
+                        style="
+                          margin-top:18px;
+                          margin-bottom:12px;
+                          color:var(--dark-green);
+                          font-weight:900;
+                        "
+                      >
+                        ${
+                          currentLanguage === "bn"
+                            ? "দায়"
+                            : "Liabilities"
+                        }
+                      </div>
+
+                      <div class="financial-grid">
+
+                        ${liabilityRecords
+                          .map(renderRecord)
+                          .join("")}
+
+                      </div>
+                    `
+                    : ""
+                }
+
+              </div>
+            `;
+
+          } else if (profile) {
+
+            /*
+              পুরোনো financial_profiles-এর
+              fallback রাখা হলো।
+            */
+
+            const verification =
+              verificationInfo(
+                profile.verification_status
+              );
+
+            const source =
+              escapeHtml(
+                profile.source ||
+                (
+                  currentLanguage === "bn"
+                    ? "উৎস উল্লেখ নেই"
+                    : "Source unavailable"
+                )
+              );
+
+            const sourceUrl =
+              safeSourceUrl(
+                profile.source_url
+              );
+
+            const sourceLinkHtml =
+              sourceUrl
+                ? `
+                  <a
+                    class="source-link"
+                    href="${escapeHtml(sourceUrl)}"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    ${
+                      currentLanguage === "bn"
+                        ? "উৎসের লিংক খুলুন"
+                        : "Open source link"
+                    }
+                  </a>
+                `
+                : (
+                    currentLanguage === "bn"
+                      ? "লিংক নেই"
+                      : "No link"
+                  );
+
+            financialHtml = `
+
+              <div class="financial-profile">
+
+                <div class="financial-title">
+                  ${
+                    currentLanguage === "bn"
+                      ? "আর্থিক প্রোফাইল"
+                      : "Financial profile"
+                  }
+                </div>
+
+                <div class="financial-grid">
+
+                  <div class="financial-item">
+                    <span class="financial-label">
+                      ${
+                        currentLanguage === "bn"
+                          ? "আয়"
+                          : "Income"
+                      }
+                    </span>
+
+                    <strong class="financial-value">
+                      ${formatMoney(profile.income)}
+                    </strong>
+                  </div>
+
+                  <div class="financial-item">
+                    <span class="financial-label">
+                      ${
+                        currentLanguage === "bn"
+                          ? "সম্পদের মূল্য"
+                          : "Asset value"
+                      }
+                    </span>
+
+                    <strong class="financial-value">
+                      ${formatMoney(profile.assets_value)}
+                    </strong>
+                  </div>
+
+                  <div class="financial-item">
+                    <span class="financial-label">
+                      ${
+                        currentLanguage === "bn"
+                          ? "দায়"
+                          : "Liabilities"
+                      }
+                    </span>
+
+                    <strong class="financial-value">
+                      ${formatMoney(profile.liabilities_value)}
+                    </strong>
+                  </div>
+
+                  <div class="financial-item">
+                    <span class="financial-label">
+                      ${
+                        currentLanguage === "bn"
+                          ? "রিপোর্টের বছর"
+                          : "Report year"
+                      }
+                    </span>
+
+                    <strong class="financial-value">
+                      ${formatYear(profile.report_year)}
+                    </strong>
+                  </div>
+
+                </div>
+
+                <div class="financial-meta">
+
+                  <div>
+                    ${
+                      currentLanguage === "bn"
+                        ? "যাচাইয়ের অবস্থা:"
+                        : "Verification status:"
+                    }
+
+                    <span class="${verification.className}">
+                      ${verification.text}
+                    </span>
+                  </div>
+
+                  <div>
+                    ${
+                      currentLanguage === "bn"
+                        ? "তথ্যের উৎস:"
+                        : "Information source:"
+                    }
+
+                    <strong>
+                      ${source}
+                    </strong>
+                  </div>
+
+                  <div>
+                    ${
+                      currentLanguage === "bn"
+                        ? "উৎসের লিংক:"
+                        : "Source link:"
+                    }
+
+                    ${sourceLinkHtml}
+                  </div>
+
+                </div>
+
+              </div>
+            `;
+
+          } else {
+
+            financialHtml = `
+
+              <div class="no-profile">
+
+                ${
+                  currentLanguage === "bn"
+                    ? "এই কর্মকর্তার জন্য এখনো আর্থিক তথ্য যুক্ত করা হয়নি।"
+                    : "No financial information has been added for this official yet."
+                }
+
+              </div>
+
+            `;
+          }
+
+          return `
+
+            <article class="result-card">
+
+              <div class="result-top">
+
+                <div class="result-info">
+
+                  <h3>
+                    ${name}
+                  </h3>
+
+                  <p>
+                    ${
+                      currentLanguage === "bn"
+                        ? "পদ: "
+                        : "Designation: "
+                    }
+
+                    ${designation}
+                  </p>
+
+                </div>
+
+                <div class="result-badge">
+
+                  ${
+                    currentLanguage === "bn"
+                      ? "প্রকাশযোগ্য তথ্য"
+                      : "Publicly publishable information"
+                  }
+
+                </div>
+
+              </div>
+
+              ${financialHtml}
+
+            </article>
+
+          `;
+
+        }
+      )
+      .join("");
+
+  section.scrollIntoView({
+    behavior: "smooth",
+    block: "start"
+  });
+}
 
     /* =========================================================
        13. INITIALIZE SUPABASE
