@@ -248,13 +248,20 @@
       try {
 
         const { data, error } =
-          await supabaseClient
-            .from("officials")
-            .select("*")
-            .or(
-              `name.ilike.%${keyword}%,designation.ilike.%${keyword}%`
-            )
-            .limit(20);
+  await supabaseClient
+    .from("officials")
+    .select(`
+      *,
+      departments (
+        name,
+        ministry_id
+      )
+    `)
+    .eq("departments.ministry_id", 1)
+    .or(
+      `name.ilike.%${keyword}%,designation.ilike.%${keyword}%`
+    )
+    .limit(20);
 
         if (error) {
           throw error;
