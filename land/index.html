@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="bn">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -56,7 +57,7 @@
       background: white;
       padding: 20px;
       border-radius: 16px;
-      box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
       margin-bottom: 20px;
     }
 
@@ -101,6 +102,10 @@
 
     .result h3 {
       margin-top: 0;
+    }
+
+    .result p {
+      margin: 8px 0;
     }
 
     .tag {
@@ -158,7 +163,7 @@
       <h2>🔎 ভূমি মন্ত্রণালয়ের তথ্য খুঁজুন</h2>
 
       <p>
-        দপ্তর, অধিদপ্তর, কর্মকর্তার নাম বা পদবী দিয়ে অনুসন্ধান করুন।
+        দপ্তর, কর্মকর্তা বা পদবী দিয়ে অনুসন্ধান করুন।
       </p>
 
       <div class="search-row">
@@ -166,7 +171,7 @@
         <input
           id="landSearch"
           type="search"
-          placeholder="যেমন: ভূমি কর্মকর্তা"
+          placeholder="যেমন: ডেমো কর্মকর্তা"
         >
 
         <button onclick="searchLand()">
@@ -191,7 +196,6 @@
 
       <div class="tag">মন্ত্রণালয়</div>
       <div class="tag">দপ্তর</div>
-      <div class="tag">অধিদপ্তর</div>
       <div class="tag">কর্মকর্তা</div>
       <div class="tag">আয়</div>
       <div class="tag">সম্পদ</div>
@@ -214,6 +218,7 @@
     </p>
 
   </footer>
+
 
   <script>
 
@@ -247,18 +252,122 @@
 
       try {
 
-        const { data, error } =
-          await supabaseClient
-            .from("officials")
-            .select("*")
-            .or(
-              `name.ilike.%${keyword}%,designation.ilike.%${keyword}%`
-            )
-            .limit(20);
+        /*
+          STEP 1:
+          ভূমি মন্ত্রণালয়ের Department ID নেওয়া
+        */
 
-        if (error) {
-          throw error;
+        const {
+          data: departments,
+          error: departmentError
+        } = await supabaseClient
+          .from("departments")
+          .select("id")
+          .eq("ministry_id", 4);
+
+        if (departmentError) {
+          throw departmentError;
         }
+
+        const departmentIds =
+          departments.map(department => department.id);
+
+
+        if (departmentIds.length === 0) {
+
+          results.innerHTML = `
+            <div class="empty">
+              ভূমি মন্ত্রণালয়ের কোনো দপ্তরের তথ্য পাওয়া যায়নি।
+            </div>
+          `;
+
+          return;
+        }
+
+
+        /*
+          STEP 2:
+          Officials table থেকে কর্মকর্তা খোঁজা
+        */
+
+        const {
+          data: officials,
+          error: officialsError
+        } = await supabaseClient
+          .from("officials")
+          .select("*")
+          .in("department_id", departmentIds)
+          .or(
+            `name.ilike.%${keyword}%,designation.ilike.%${keyword}%`
+          )
+          .limit(20);
+
+        if (officialsError) {
+          throw officialsError;
+        }
+
+
+        /*
+          STEP 3:
+          পাওয়া কর্মকর্তাদের Department ID সংগ্রহ
+        */
+
+        const departmentIdsForOfficials = [
+          ...new Set(
+            officials
+              .map(official => official.department_id)
+              .filter(id => id !== null)
+          )
+        ];
+
+
+        /*
+          STEP 4:
+          Department-এর বিস্তারিত তথ্য আনা
+        */
+
+        let departmentsMap = {};
+
+        if (departmentIdsForOfficials.length > 0) {
+
+          const {
+            data: departmentDetails,
+            error: departmentsError
+          } = await supabaseClient
+            .from("departments")
+            .select("id, name, district, upazila")
+            .in("id", departmentIdsForOfficials);
+
+          if (departmentsError) {
+            throw departmentsError;
+          }
+
+          departmentsMap =
+            Object.fromEntries(
+              departmentDetails.map(department => [
+                department.id,
+                department
+              ])
+            );
+        }
+
+
+        /*
+          STEP 5:
+          Officials + Department information একসাথে করা
+        */
+
+        const data = officials.map(official => ({
+          ...official,
+
+          departments:
+            departmentsMap[official.department_id] || null
+        }));
+
+
+        /*
+          কোনো কর্মকর্তা না পাওয়া গেলে
+        */
 
         if (!data || data.length === 0) {
 
@@ -271,18 +380,47 @@
           return;
         }
 
+
+        /*
+          STEP 6:
+          Search Result দেখানো
+        */
+
         results.innerHTML = data.map(official => `
 
           <div class="result">
 
             <h3>
-              ${escapeHtml(official.name || "নাম নেই")}
+              ${escapeHtml(
+                official.name || "নাম নেই"
+              )}
             </h3>
 
             <p>
               <strong>পদবী:</strong>
               ${escapeHtml(
                 official.designation || "তথ্য নেই"
+              )}
+            </p>
+
+            <p>
+              <strong>দপ্তর:</strong>
+              ${escapeHtml(
+                official.departments?.name || "তথ্য নেই"
+              )}
+            </p>
+
+            <p>
+              <strong>জেলা:</strong>
+              ${escapeHtml(
+                official.departments?.district || "তথ্য নেই"
+              )}
+            </p>
+
+            <p>
+              <strong>উপজেলা:</strong>
+              ${escapeHtml(
+                official.departments?.upazila || "তথ্য নেই"
               )}
             </p>
 
@@ -294,20 +432,24 @@
 
         `).join("");
 
+
       } catch (error) {
 
         console.error(error);
 
         results.innerHTML = `
           <div class="empty">
-            তথ্য আনার সময় সমস্যা হয়েছে।
-            পরে আবার চেষ্টা করুন।
+            সমস্যা হয়েছে:<br>
+            ${escapeHtml(
+              error.message || String(error)
+            )}
           </div>
         `;
 
       }
 
     }
+
 
     function escapeHtml(value) {
 
@@ -319,6 +461,7 @@
         .replace(/'/g, "&#039;");
 
     }
+
 
     document
       .getElementById("landSearch")
@@ -336,4 +479,5 @@
   </script>
 
 </body>
+
 </html>
