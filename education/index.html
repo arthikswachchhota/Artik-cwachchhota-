@@ -203,7 +203,6 @@
     © আর্থিক স্বচ্ছতা
   </footer>
 
-
   <script>
 
     async function searchEducation() {
@@ -229,7 +228,7 @@
         */
 
         const { data: departments, error: departmentError } =
-          await window.supabaseClient
+          await supabaseClient
             .from("departments")
             .select("id")
             .eq("ministry_id", 5);
@@ -254,7 +253,7 @@
         */
 
         const { data: officials, error: officialError } =
-          await window.supabaseClient
+          await supabaseClient
             .from("officials")
             .select("id, name, designation, department_id")
             .in("department_id", departmentIds)
@@ -289,7 +288,7 @@
         */
 
         const { data: departmentDetails, error: detailError } =
-          await window.supabaseClient
+          await supabaseClient
             .from("departments")
             .select("id, name, district, upazila")
             .in("id", officialDepartmentIds);
