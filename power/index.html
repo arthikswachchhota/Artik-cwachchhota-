@@ -30,7 +30,7 @@
     header {
       background: linear-gradient(135deg, #00695c, #00897b);
       color: white;
-      padding: 28px 18px;
+      padding: 30px 18px;
       text-align: center;
     }
 
@@ -41,12 +41,12 @@
 
     header p {
       margin: 0;
-      opacity: 0.9;
+      opacity: 0.95;
     }
 
     .container {
       width: min(900px, 94%);
-      margin: 20px auto;
+      margin: 22px auto;
     }
 
     .back {
@@ -83,10 +83,15 @@
       border: 1px solid #d5d9e2;
       border-radius: 10px;
       font-size: 16px;
+      outline: none;
+    }
+
+    input:focus {
+      border-color: #00897b;
     }
 
     button {
-      padding: 14px 22px;
+      padding: 14px 24px;
       border: 0;
       border-radius: 10px;
       background: #00695c;
@@ -110,6 +115,7 @@
 
     .result p {
       margin: 9px 0;
+      line-height: 1.6;
     }
 
     .label {
@@ -119,7 +125,7 @@
     .empty {
       color: #777;
       text-align: center;
-      padding: 15px;
+      padding: 18px;
     }
 
     .error {
@@ -128,10 +134,11 @@
       padding: 14px;
       border-radius: 10px;
       margin-top: 15px;
+      line-height: 1.7;
     }
 
     .info {
-      line-height: 1.8;
+      line-height: 1.9;
     }
 
     footer {
@@ -192,7 +199,7 @@
 
       <p>
         এখানে শুধুমাত্র আইনসম্মতভাবে প্রকাশযোগ্য তথ্য প্রকাশের উদ্দেশ্যে
-        কাঠামো তৈরি করা হচ্ছে।
+        তথ্যের কাঠামো তৈরি করা হচ্ছে।
       </p>
 
     </section>
@@ -203,120 +210,163 @@
     © আর্থিক স্বচ্ছতা
   </footer>
 
+
   <script>
+
+    /*
+      ==========================================
+      বিদ্যুৎ মন্ত্রণালয়ের নির্দিষ্ট তথ্য
+      ==========================================
+
+      Ministry ID = 6
+      Department ID = 11
+
+      এই পেজে শুধুমাত্র Department ID 11
+      এর কর্মকর্তাদের দেখানো হবে।
+    */
+
+    const POWER_MINISTRY_ID = 6;
+    const POWER_DEPARTMENT_ID = 11;
+
 
     async function searchPower() {
 
       const searchText =
-        document.getElementById("powerSearch").value.trim();
+        document.getElementById("powerSearch").value.trim().toLowerCase();
 
       const resultsDiv =
         document.getElementById("powerResults");
 
       resultsDiv.innerHTML = "";
 
+
       if (!searchText) {
+
         resultsDiv.innerHTML =
           '<div class="empty">অনুসন্ধানের জন্য কিছু লিখুন।</div>';
+
         return;
       }
+
 
       try {
 
         /*
-          বিদ্যুৎ মন্ত্রণালয়ের ID = 6
+          প্রথমে নিশ্চিত করছি যে Department ID 11
+          সত্যিই Ministry ID 6-এর অধীনে আছে।
         */
 
-        const { data: departments, error: departmentError } =
-          await supabaseClient
-            .from("departments")
-            .select("id")
-            .eq("ministry_id", 6);
+        const {
+          data: department,
+          error: departmentError
+        } = await supabaseClient
+          .from("departments")
+          .select("id, name, district, upazila, ministry_id")
+          .eq("id", POWER_DEPARTMENT_ID)
+          .eq("ministry_id", POWER_MINISTRY_ID)
+          .maybeSingle();
+
 
         if (departmentError) {
           throw departmentError;
         }
 
-        if (!departments || departments.length === 0) {
 
-          resultsDiv.innerHTML =
-            '<div class="empty">বিদ্যুৎ মন্ত্রণালয়ের কোনো দপ্তর পাওয়া যায়নি।</div>';
+        if (!department) {
+
+          resultsDiv.innerHTML = `
+            <div class="error">
+              বিদ্যুৎ মন্ত্রণালয়ের নির্ধারিত দপ্তর পাওয়া যায়নি।
+            </div>
+          `;
 
           return;
         }
 
-        const departmentIds =
-          departments.map(d => d.id);
 
         /*
-          কর্মকর্তাদের তথ্য খোঁজা
+          এখন শুধুমাত্র department_id = 11
+          এর কর্মকর্তাদের নেওয়া হচ্ছে।
         */
 
-        const { data: officials, error: officialError } =
-          await supabaseClient
-            .from("officials")
-            .select("id, name, designation, department_id")
-            .in("department_id", departmentIds)
-            .or(
-              `name.ilike.%${searchText}%,designation.ilike.%${searchText}%`
-            );
+        const {
+          data: officials,
+          error: officialError
+        } = await supabaseClient
+          .from("officials")
+          .select("id, name, designation, department_id")
+          .eq("department_id", POWER_DEPARTMENT_ID);
+
 
         if (officialError) {
           throw officialError;
         }
 
+
         if (!officials || officials.length === 0) {
 
-          resultsDiv.innerHTML =
-            '<div class="empty">কোনো তথ্য পাওয়া যায়নি।</div>';
+          resultsDiv.innerHTML = `
+            <div class="empty">
+              এই দপ্তরের কোনো কর্মকর্তা তথ্য পাওয়া যায়নি।
+            </div>
+          `;
 
           return;
         }
 
-        /*
-          কর্মকর্তাদের department ID সংগ্রহ
-        */
-
-        const officialDepartmentIds = [
-          ...new Set(
-            officials.map(o => o.department_id)
-          )
-        ];
 
         /*
-          দপ্তরের বিস্তারিত তথ্য
+          Search filtering এখন JavaScript-এ করা হচ্ছে।
+
+          ফলে একই নামে অন্য মন্ত্রণালয়ের কর্মকর্তা
+          কোনোভাবেই এই ফলাফলে আসবে না।
         */
 
-        const { data: departmentDetails, error: detailError } =
-          await supabaseClient
-            .from("departments")
-            .select("id, name, district, upazila")
-            .in("id", officialDepartmentIds);
+        const filteredOfficials = officials.filter(official => {
 
-        if (detailError) {
-          throw detailError;
+          const name =
+            (official.name || "").toLowerCase();
+
+          const designation =
+            (official.designation || "").toLowerCase();
+
+          const departmentName =
+            (department.name || "").toLowerCase();
+
+          return (
+            name.includes(searchText) ||
+            designation.includes(searchText) ||
+            departmentName.includes(searchText)
+          );
+
+        });
+
+
+        if (filteredOfficials.length === 0) {
+
+          resultsDiv.innerHTML = `
+            <div class="empty">
+              কোনো তথ্য পাওয়া যায়নি।
+            </div>
+          `;
+
+          return;
         }
 
-        const departmentsMap = {};
-
-        (departmentDetails || []).forEach(dept => {
-          departmentsMap[dept.id] = dept;
-        });
 
         /*
           ফলাফল দেখানো
         */
 
-        officials.forEach(official => {
+        filteredOfficials.forEach(official => {
 
-          const department =
-            departmentsMap[official.department_id] || {};
-
-          const result = document.createElement("div");
+          const result =
+            document.createElement("div");
 
           result.className = "result";
 
           result.innerHTML = `
+
             <p>
               <span class="label">👤 কর্মকর্তা:</span>
               ${official.name || "তথ্য নেই"}
@@ -346,11 +396,13 @@
               <span class="label">⚡ মন্ত্রণালয়:</span>
               বিদ্যুৎ মন্ত্রণালয়
             </p>
+
           `;
 
           resultsDiv.appendChild(result);
 
         });
+
 
       } catch (error) {
 
@@ -358,15 +410,18 @@
 
         resultsDiv.innerHTML = `
           <div class="error">
-            তথ্য খুঁজতে সমস্যা হয়েছে। কিছুক্ষণ পরে আবার চেষ্টা করুন।
+            তথ্য খুঁজতে সমস্যা হয়েছে।
             <br>
-            <small>${error.message || ""}</small>
+            কিছুক্ষণ পরে আবার চেষ্টা করুন।
+            <br>
+            <small>${error.message || "অজানা সমস্যা"}</small>
           </div>
         `;
 
       }
 
     }
+
 
     /*
       Enter চাপলেও Search হবে
