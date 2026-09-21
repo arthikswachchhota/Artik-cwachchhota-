@@ -832,21 +832,25 @@
     </p>
   </div>
 
-  <div class="ministry-card">
-    <h3
-      data-bn="ভূমি"
-      data-en="Land"
-    >
-      ভূমি
-    </h3>
+      <div
+  class="ministry-card"
+  onclick="showLand()"
+  style="cursor:pointer;"
+>
+  <h3
+    data-bn="ভূমি"
+    data-en="Land"
+  >
+    ভূমি
+  </h3>
 
-    <p
-      data-bn="ভূমি প্রশাসন ও সংশ্লিষ্ট কর্মকর্তা"
-      data-en="Land administration and related officials"
-    >
-      ভূমি প্রশাসন ও সংশ্লিষ্ট কর্মকর্তা
-    </p>
-  </div>
+  <p
+    data-bn="ভূমি প্রশাসন ও সংশ্লিষ্ট কর্মকর্তা"
+    data-en="Land administration and related officials"
+  >
+    ভূমি প্রশাসন ও সংশ্লিষ্ট কর্মকর্তা
+  </p>
+</div>
 
   <div class="ministry-card">
     <h3
@@ -1654,6 +1658,114 @@ function showAgricultureOfficials() {
     agricultureOfficials.style.display = "block";
 
     agricultureOfficials.scrollIntoView({
+      behavior: "smooth",
+      block: "start"
+    });
+
+  }
+
+}
+
+
+function showLand() {
+
+  const ministries =
+    document.getElementById("ministries");
+
+  const searchResultsSection =
+    document.getElementById("searchResultsSection");
+
+  const agricultureDetails =
+    document.getElementById("agricultureDetails");
+
+  const landDetails =
+    document.getElementById("landDetails");
+
+  const agricultureOfficials =
+    document.getElementById("agricultureOfficials");
+
+  const landOfficials =
+    document.getElementById("landOfficials");
+
+
+  if (ministries) {
+    ministries.style.display = "none";
+  }
+
+  if (searchResultsSection) {
+    searchResultsSection.style.display = "none";
+  }
+
+  if (agricultureDetails) {
+    agricultureDetails.style.display = "none";
+  }
+
+  if (agricultureOfficials) {
+    agricultureOfficials.style.display = "none";
+  }
+
+  if (landOfficials) {
+    landOfficials.style.display = "none";
+  }
+
+  if (landDetails) {
+
+    landDetails.style.display = "block";
+
+    landDetails.scrollIntoView({
+      behavior: "smooth",
+      block: "start"
+    });
+
+  }
+
+}
+
+
+function closeLand() {
+
+  const ministries =
+    document.getElementById("ministries");
+
+  const landDetails =
+    document.getElementById("landDetails");
+
+  const landOfficials =
+    document.getElementById("landOfficials");
+
+
+  if (landDetails) {
+    landDetails.style.display = "none";
+  }
+
+  if (landOfficials) {
+    landOfficials.style.display = "none";
+  }
+
+  if (ministries) {
+
+    ministries.style.display = "block";
+
+    ministries.scrollIntoView({
+      behavior: "smooth",
+      block: "start"
+    });
+
+  }
+
+}
+
+
+function showLandOfficials() {
+
+  const landOfficials =
+    document.getElementById("landOfficials");
+
+  if (landOfficials) {
+
+    landOfficials.style.display = "block";
+
+    landOfficials.scrollIntoView({
       behavior: "smooth",
       block: "start"
     });
