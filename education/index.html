@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <title>শিক্ষা মন্ত্রণালয় — আর্থিক স্বচ্ছতা</title>
+  <title>শিক্ষা — আর্থিক স্বচ্ছতা</title>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="../config.js"></script>
@@ -87,6 +87,10 @@
       cursor: pointer;
     }
 
+    button:hover {
+      background: #09572f;
+    }
+
     .result {
       background: white;
       padding: 18px;
@@ -139,7 +143,7 @@
 <body>
 
   <header>
-    <h1>🎓 শিক্ষা মন্ত্রণালয়</h1>
+    <h1>📚 শিক্ষা</h1>
     <p>আর্থিক স্বচ্ছতা — প্রকাশিত তথ্য ও যাচাই</p>
   </header>
 
@@ -150,7 +154,8 @@
     </a>
 
     <section class="search-box">
-      <h2>🔎 শিক্ষা মন্ত্রণালয়ের তথ্য খুঁজুন</h2>
+
+      <h2>🔎 শিক্ষা খাতের তথ্য খুঁজুন</h2>
 
       <p>
         দপ্তর, অধিদপ্তর, কর্মকর্তার নাম বা পদবী দিয়ে অনুসন্ধান করুন।
@@ -169,6 +174,7 @@
         </button>
 
       </div>
+
     </section>
 
     <section id="results">
@@ -213,10 +219,14 @@
 
     async function searchEducation() {
 
-      const input = document.getElementById("educationSearch");
-      const results = document.getElementById("results");
+      const input =
+        document.getElementById("educationSearch");
 
-      const keyword = input.value.trim();
+      const results =
+        document.getElementById("results");
+
+      const keyword =
+        input.value.trim();
 
       if (!keyword) {
 
@@ -237,13 +247,14 @@
 
       try {
 
-        const { data, error } = await supabaseClient
-          .from("officials")
-          .select("*")
-          .or(
-            `name.ilike.%${keyword}%,designation.ilike.%${keyword}%`
-          )
-          .limit(20);
+        const { data, error } =
+          await supabaseClient
+            .from("officials")
+            .select("*")
+            .or(
+              `name.ilike.%${keyword}%,designation.ilike.%${keyword}%`
+            )
+            .limit(20);
 
         if (error) {
           throw error;
@@ -270,11 +281,13 @@
 
             <p>
               <strong>পদবী:</strong>
-              ${escapeHtml(official.designation || "তথ্য নেই")}
+              ${escapeHtml(
+                official.designation || "তথ্য নেই"
+              )}
             </p>
 
             <span class="tag">
-              শিক্ষা মন্ত্রণালয়
+              শিক্ষা
             </span>
 
           </div>
@@ -287,7 +300,8 @@
 
         results.innerHTML = `
           <div class="empty">
-            তথ্য আনার সময় সমস্যা হয়েছে। পরে আবার চেষ্টা করুন।
+            তথ্য আনার সময় সমস্যা হয়েছে।
+            পরে আবার চেষ্টা করুন।
           </div>
         `;
 
@@ -308,13 +322,16 @@
 
     document
       .getElementById("educationSearch")
-      .addEventListener("keydown", function(event) {
+      .addEventListener(
+        "keydown",
+        function(event) {
 
-        if (event.key === "Enter") {
-          searchEducation();
+          if (event.key === "Enter") {
+            searchEducation();
+          }
+
         }
-
-      });
+      );
 
   </script>
 
