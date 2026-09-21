@@ -310,11 +310,11 @@ if (error) {
         console.error(error);
 
         results.innerHTML = `
-          <div class="empty">
-            তথ্য আনার সময় সমস্যা হয়েছে।
-            পরে আবার চেষ্টা করুন।
-          </div>
-        `;
+  <div class="empty">
+    সমস্যা হয়েছে:<br>
+    ${escapeHtml(error.message || String(error))}
+  </div>
+`;
 
       }
 
