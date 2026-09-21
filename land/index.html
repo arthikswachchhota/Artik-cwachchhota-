@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ভূমি মন্ত্রণালয় — আর্থিক স্বচ্ছতা</title>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="../config.js"></script>
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #f5f8f6;
+      color: #183b2a;
+    }
+
+    header {
+      background: #0b6b3a;
+      color: white;
+      padding: 18px;
+      text-align: center;
+    }
+
+    header h1 {
+      margin: 0;
+      font-size: 24px;
+    }
+
+    header p {
+      margin: 6px 0 0;
+      font-size: 14px;
+    }
+
+    .container {
+      max-width: 900px;
+      margin: auto;
+      padding: 20px;
+    }
+
+    .back {
+      display: inline-block;
+      margin-bottom: 18px;
+      color: #0b6b3a;
+      text-decoration: none;
+      font-weight: bold;
+    }
+
+    .search-box {
+      background: white;
+      padding: 20px;
+      border-radius: 16px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+      margin-bottom: 20px;
+    }
+
+    .search-box h2 {
+      margin-top: 0;
+    }
+
+    .search-row {
+      display: flex;
+      gap: 10px;
+    }
+
+    input {
+      flex: 1;
+      padding: 14px;
+      border: 1px solid #ccd8d1;
+      border-radius: 10px;
+      font-size: 16px;
+    }
+
+    button {
+      border: none;
+      background: #0b6b3a;
+      color: white;
+      padding: 14px 20px;
+      border-radius: 10px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+
+    .result {
+      background: white;
+      padding: 18px;
+      border-radius: 14px;
+      margin-top: 12px;
+      border-left: 5px solid #0b6b3a;
+    }
+
+    .result h3 {
+      margin-top: 0;
+    }
+
+    .tag {
+      display: inline-block;
+      background: #e7f5ed;
+      color: #0b6b3a;
+      padding: 5px 9px;
+      border-radius: 20px;
+      font-size: 13px;
+      margin: 3px 0;
+    }
+
+    .empty {
+      text-align: center;
+      padding: 20px;
+      color: #68766e;
+    }
+
+    footer {
+      margin-top: 40px;
+      background: #183b2a;
+      color: white;
+      text-align: center;
+      padding: 20px;
+      font-size: 13px;
+    }
+
+    @media (max-width: 600px) {
+      .search-row {
+        flex-direction: column;
+      }
+
+      button {
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <header>
+    <h1>🏞️ ভূমি মন্ত্রণালয়</h1>
+    <p>আর্থিক স্বচ্ছতা — প্রকাশিত তথ্য ও যাচাই</p>
+  </header>
+
+  <main class="container">
+
+    <a class="back" href="../index.html">← মূল পেজে ফিরে যান</a>
+
+    <section class="search-box">
+      <h2>🔎 ভূমি মন্ত্রণালয়ের তথ্য খুঁজুন</h2>
+      <p>
+        দপ্তর, অধিদপ্তর, কর্মকর্তার নাম বা পদবী দিয়ে অনুসন্ধান করুন।
+      </p>
+
+      <div class="search-row">
+        <input
+          id="landSearch"
+          type="search"
+          placeholder="যেমন: ভূমি কর্মকর্তা"
+        >
+
+        <button onclick="searchLand()">
+          খুঁজুন
+        </button>
+      </div>
+    </section>
+
+    <section id="results">
+      <div class="empty">
+        অনুসন্ধানের জন্য উপরের ঘরে লিখুন।
+      </div>
+    </section>
+
+    <section class="search-box">
+      <h2>📌 তথ্যের কাঠামো</h2>
+
+      <div class="tag">মন্ত্রণালয়</div>
+      <div class="tag">দপ্তর</div>
+      <div class="tag">অধিদপ্তর</div>
+      <div class="tag">কর্মকর্তা</div>
+      <div class="tag">আয়</div>
+      <div class="tag">সম্পদ</div>
+      <div class="tag">দায়</div>
+      <div class="tag">উৎস</div>
+      <div class="tag">যাচাই</div>
+    </section>
+
+  </main>
+
+  <footer>
+    <p>
+      আর্থিক স্বচ্ছতা — জনগণের অর্থ, জনগণের জানার অধিকার।
+    </p>
+    <p>
+      ব্যক্তিগত ব্যাংক তথ্য, OTP, PIN, password বা গোপন credentials প্রকাশ করা হবে না।
+    </p>
+  </footer>
+
+  <script>
+    async function searchLand() {
+      const input = document.getElementById("landSearch");
+      const results = document.getElementById("results");
+
+      const keyword = input.value.trim();
+
+      if (!keyword) {
+        results.innerHTML = `
+          <div class="empty">
+            দয়া করে কিছু লিখে অনুসন্ধান করুন।
+          </div>
+        `;
+        return;
+      }
+
+      results.innerHTML = `
+        <div class="empty">
+          🔎 তথ্য খোঁজা হচ্ছে...
+        </div>
+      `;
+
+      try {
+        const { data, error } = await supabaseClient
+          .from("officials")
+          .select("*")
+          .or(`name.ilike.%${keyword}%,designation.ilike.%${keyword}%`)
+          .limit(20);
+
+        if (error) {
+          throw error;
+        }
+
+        if (!data || data.length === 0) {
+          results.innerHTML = `
+            <div class="empty">
+              এই নামে কোনো কর্মকর্তা পাওয়া যায়নি।
+            </div>
+          `;
+          return;
+        }
+
+        results.innerHTML = data.map(official => `
+          <div class="result">
+            <h3>${escapeHtml(official.name || "নাম নেই")}</h3>
+
+            <p>
+              <strong>পদবী:</strong>
+              ${escapeHtml(official.designation || "তথ্য নেই")}
+            </p>
+
+            <span class="tag">ভূমি মন্ত্রণালয়</span>
+          </div>
+        `).join("");
+
+      } catch (error) {
+        console.error(error);
+
+        results.innerHTML = `
+          <div class="empty">
+            তথ্য আনার সময় সমস্যা হয়েছে। পরে আবার চেষ্টা করুন।
+          </div>
+        `;
+      }
+    }
+
+    function escapeHtml(value) {
+      return String(value)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+    }
+
+    document
+      .getElementById("landSearch")
+      .addEventListener("keydown", function(event) {
+        if (event.key === "Enter") {
+          searchLand();
+        }
+      });
+  </script>
+
+</body>
+</html>
