@@ -247,26 +247,30 @@
 
       try {
 
-        const { data, error } =
+        const { data: departments, error: departmentError } =
+  await supabaseClient
+    .from("departments")
+    .select("id")
+    .eq("ministry_id", 1);
+
+if (departmentError) {
+  throw departmentError;
+}
+
+const departmentIds = departments.map(d => d.id);
+
+const { data, error } =
   await supabaseClient
     .from("officials")
-    .select(`
-      *,
-      departments (
-        name,
-        ministry_id
-      )
-    `)
-    .eq("departments.ministry_id", 1)
+    .select("*")
+    .in("department_id", departmentIds)
     .or(
       `name.ilike.%${keyword}%,designation.ilike.%${keyword}%`
     )
     .limit(20);
-
-        if (error) {
-          throw error;
-        }
-
+if (error) {
+  throw error;
+}
         if (!data || data.length === 0) {
 
           results.innerHTML = `
