@@ -259,26 +259,55 @@ if (departmentError) {
 
 const departmentIds = departments.map(d => d.id);
 
-const { data, error } =
+const { data: officials, error: officialsError } =
   await supabaseClient
     .from("officials")
-    .select(`
-      *,
-      departments (
-        name,
-        district,
-        upazila
-      )
-    `)
+    .select("*")
     .in("department_id", departmentIds)
     .or(
       `name.ilike.%${keyword}%,designation.ilike.%${keyword}%`
     )
     .limit(20);
 
-if (error) {
-  throw error;
+if (officialsError) {
+  throw officialsError;
 }
+
+const departmentIdsForOfficials = [
+  ...new Set(
+    officials
+      .map(official => official.department_id)
+      .filter(id => id !== null)
+  )
+];
+
+let departmentsMap = {};
+
+if (departmentIdsForOfficials.length > 0) {
+
+  const { data: departments, error: departmentsError } =
+    await supabaseClient
+      .from("departments")
+      .select("id, name, district, upazila")
+      .in("id", departmentIdsForOfficials);
+
+  if (departmentsError) {
+    throw departmentsError;
+  }
+
+  departmentsMap = Object.fromEntries(
+    departments.map(department => [
+      department.id,
+      department
+    ])
+  );
+}
+
+const data = officials.map(official => ({
+  ...official,
+  departments:
+    departmentsMap[official.department_id] || null
+}));
         if (!data || data.length === 0) {
 
           results.innerHTML = `
