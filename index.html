@@ -1,1770 +1,216 @@
-<!DOCTYPE html>
-<html lang="bn" dir="ltr">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<script>
 
-  <title>আর্থিক স্বচ্ছতা | বাংলাদেশ</title>
+  /* =========================================================
+     আর্থিক স্বচ্ছতা
+     GLOBAL SEARCH — FINAL VERSION
+     ========================================================= */
 
-  <meta
-    name="description"
-    content="সরকারি কর্মজীবীদের আইনসম্মতভাবে প্রকাশযোগ্য আয়, সম্পদ, দায় ও আর্থিক তথ্য যাচাইয়ের নাগরিক প্ল্যাটফর্ম।"
-  >
+  const SUPABASE_URL =
+    "https://dlfobjpzxdnnszpqowqd.supabase.co";
 
-  <style>
-    :root {
-      --green: #087f5b;
-      --dark-green: #075b43;
-      --light-green: #e9f7f1;
-      --bg: #f5f8f7;
-      --white: #ffffff;
-      --text: #17352d;
-      --muted: #667a74;
-      --border: #dce8e3;
-      --yellow: #fff8d9;
-      --yellow-border: #eadb82;
-      --purple: #6f42c1;
-      --red: #b42318;
-      --shadow: 0 8px 30px rgba(0, 0, 0, 0.06);
-    }
-
-    * {
-      box-sizing: border-box;
-    }
-
-    html {
-      scroll-behavior: smooth;
-    }
-
-    body {
-      margin: 0;
-      background: var(--bg);
-      color: var(--text);
-      font-family:
-        system-ui,
-        -apple-system,
-        BlinkMacSystemFont,
-        "Segoe UI",
-        "Noto Sans Bengali",
-        Arial,
-        sans-serif;
-      line-height: 1.6;
-    }
-
-    a {
-      color: inherit;
-    }
-
-    button,
-    input {
-      font: inherit;
-    }
-
-    button {
-      cursor: pointer;
-    }
-
-    .container {
-      width: min(1120px, calc(100% - 30px));
-      margin: 0 auto;
-    }
-
-    /* =========================================================
-       HEADER
-       ========================================================= */
-
-    header {
-      position: sticky;
-      top: 0;
-      z-index: 100;
-      background: rgba(255, 255, 255, 0.96);
-      border-bottom: 1px solid var(--border);
-      backdrop-filter: blur(10px);
-    }
-
-    .header-inner {
-      min-height: 70px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 20px;
-    }
-
-    .logo {
-      text-decoration: none;
-      color: var(--dark-green);
-      font-size: 21px;
-      font-weight: 900;
-      white-space: nowrap;
-    }
-
-    nav {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-
-    nav a {
-      text-decoration: none;
-      padding: 8px 12px;
-      border-radius: 8px;
-      color: var(--text);
-      font-weight: 700;
-      font-size: 14px;
-    }
-
-    nav a:hover {
-      background: var(--light-green);
-      color: var(--green);
-    }
-
-    .language-button {
-      border: 1px solid var(--border);
-      background: var(--white);
-      color: var(--green);
-      border-radius: 9px;
-      padding: 8px 13px;
-      font-weight: 800;
-    }
-
-    .language-button:hover {
-      background: var(--light-green);
-    }
-
-    /* =========================================================
-       HERO
-       ========================================================= */
-
-    .hero {
-      padding: 70px 0 55px;
-      background:
-        linear-gradient(
-          135deg,
-          #eefaf5 0%,
-          #ffffff 55%,
-          #f3faf7 100%
-        );
-    }
-
-    .hero-content {
-      max-width: 850px;
-      margin: 0 auto;
-      text-align: center;
-    }
-
-    .hero-badge {
-      display: inline-block;
-      padding: 7px 13px;
-      background: var(--light-green);
-      color: var(--green);
-      border: 1px solid #c9e9dc;
-      border-radius: 999px;
-      font-size: 13px;
-      font-weight: 800;
-      margin-bottom: 15px;
-    }
-
-    .hero h1 {
-      margin: 0 0 15px;
-      color: var(--dark-green);
-      font-size: clamp(32px, 6vw, 54px);
-      line-height: 1.15;
-    }
-
-    .hero p {
-      max-width: 720px;
-      margin: 0 auto 28px;
-      color: var(--muted);
-      font-size: 17px;
-    }
-
-    /* =========================================================
-       SEARCH
-       ========================================================= */
-
-    .search-box {
-      max-width: 760px;
-      margin: 0 auto;
-      background: var(--white);
-      border: 1px solid var(--border);
-      box-shadow: var(--shadow);
-      border-radius: 16px;
-      padding: 10px;
-      display: flex;
-      gap: 10px;
-    }
-
-    .search-box input {
-      flex: 1;
-      min-width: 0;
-      border: 0;
-      outline: none;
-      padding: 13px 15px;
-      color: var(--text);
-      background: transparent;
-    }
-
-    .search-box input:focus {
-      outline: none;
-    }
-
-    .search-box button {
-      border: 0;
-      background: var(--green);
-      color: white;
-      border-radius: 11px;
-      padding: 12px 22px;
-      font-weight: 800;
-    }
-
-    .search-box button:hover {
-      background: var(--dark-green);
-    }
-
-    .search-box button:disabled {
-      opacity: 0.65;
-      cursor: wait;
-    }
-
-    #connectionStatus {
-      margin-top: 12px;
-      text-align: center;
-      font-size: 14px;
-      color: var(--muted);
-      min-height: 22px;
-    }
-
-    .status-error {
-      color: var(--red) !important;
-    }
-
-    .status-success {
-      color: var(--green) !important;
-    }
-
-    /* =========================================================
-       STATISTICS
-       ========================================================= */
-
-    .stats {
-      padding: 35px 0;
-    }
-
-    .stats-grid {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 16px;
-    }
-
-    .stat-card {
-      background: var(--white);
-      border: 1px solid var(--border);
-      border-radius: 15px;
-      padding: 22px;
-      text-align: center;
-      box-shadow: var(--shadow);
-    }
-
-    .stat-number {
-      display: block;
-      font-size: 34px;
-      font-weight: 900;
-      color: var(--green);
-      margin-bottom: 4px;
-    }
-
-    .stat-label {
-      color: var(--muted);
-      font-weight: 700;
-    }
-
-    /* =========================================================
-       SECTIONS
-       ========================================================= */
-
-    section {
-      padding: 45px 0;
-    }
-
-    .section-title {
-      margin: 0 0 10px;
-      text-align: center;
-      color: var(--dark-green);
-      font-size: 28px;
-    }
-
-    .section-description {
-      max-width: 720px;
-      margin: 0 auto 25px;
-      text-align: center;
-      color: var(--muted);
-    }
-
-    /* =========================================================
-       SEARCH RESULTS
-       ========================================================= */
-
-    #searchResultsSection {
-      display: none;
-    }
-
-    .results-box {
-      display: grid;
-      gap: 16px;
-    }
-
-    .result-card {
-      background: var(--white);
-      border: 1px solid var(--border);
-      border-radius: 16px;
-      padding: 20px;
-      box-shadow: var(--shadow);
-    }
-
-    .result-top {
-      display: flex;
-      justify-content: space-between;
-      align-items: flex-start;
-      gap: 15px;
-    }
-
-    .result-info {
-      min-width: 0;
-    }
-
-    .result-info h3 {
-      margin: 0 0 5px;
-      color: var(--dark-green);
-      font-size: 20px;
-    }
-
-    .result-info p {
-      margin: 0;
-      color: var(--muted);
-    }
-
-    .result-badge {
-      flex-shrink: 0;
-      background: var(--light-green);
-      color: var(--green);
-      border: 1px solid #c9e9dc;
-      padding: 6px 10px;
-      border-radius: 999px;
-      font-size: 12px;
-      font-weight: 800;
-    }
-
-    /* =========================================================
-       FINANCIAL PROFILE
-       ========================================================= */
-
-    .financial-profile {
-      margin-top: 18px;
-      padding-top: 18px;
-      border-top: 1px solid var(--border);
-    }
-
-    .financial-title {
-      color: var(--dark-green);
-      font-size: 17px;
-      font-weight: 900;
-      margin-bottom: 12px;
-    }
-
-    .financial-group-title {
-      margin-top: 18px;
-      margin-bottom: 10px;
-      color: var(--dark-green);
-      font-weight: 900;
-      font-size: 15px;
-    }
-
-    .financial-group-title:first-child {
-      margin-top: 0;
-    }
-
-    .financial-grid {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 10px;
-    }
-
-    .financial-item {
-      background: var(--bg);
-      border: 1px solid var(--border);
-      border-radius: 11px;
-      padding: 13px;
-    }
-
-    .financial-label {
-      display: block;
-      color: var(--muted);
-      font-size: 12px;
-      margin-bottom: 4px;
-    }
-
-    .financial-value {
-      color: var(--text);
-      font-size: 15px;
-      font-weight: 800;
-      word-break: break-word;
-    }
-
-    .financial-meta {
-      margin-top: 13px;
-      display: grid;
-      gap: 7px;
-      color: var(--muted);
-      font-size: 13px;
-    }
-
-    .financial-meta strong {
-      color: var(--text);
-    }
-
-    .source-link {
-      color: var(--green);
-      font-weight: 800;
-      text-decoration: none;
-    }
-
-    .source-link:hover {
-      text-decoration: underline;
-    }
-
-    .verification {
-      display: inline-block;
-      padding: 3px 8px;
-      border-radius: 999px;
-      background: var(--light-green);
-      color: var(--green);
-      font-weight: 800;
-    }
-
-    .verification-demo {
-      background: var(--yellow);
-      color: #725b00;
-    }
-
-    .verification-needed {
-      background: #fff0ee;
-      color: var(--red);
-    }
-
-    .no-profile {
-      margin-top: 18px;
-      padding-top: 18px;
-      border-top: 1px solid var(--border);
-      color: var(--muted);
-      font-size: 14px;
-    }
-
-    .no-result {
-      background: var(--white);
-      border: 1px solid var(--border);
-      border-radius: 14px;
-      padding: 25px;
-      text-align: center;
-      color: var(--muted);
-    }
-
-    /* =========================================================
-       MINISTRY CARDS
-       ========================================================= */
-
-    .ministry-grid {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 15px;
-    }
-
-    .ministry-card {
-      background: var(--white);
-      border: 1px solid var(--border);
-      border-radius: 14px;
-      padding: 18px;
-      box-shadow: var(--shadow);
-    }
-
-    .ministry-card h3 {
-      margin: 0 0 5px;
-      color: var(--dark-green);
-      font-size: 17px;
-    }
-
-    .ministry-card p {
-      margin: 0;
-      color: var(--muted);
-      font-size: 13px;
-    }
-
-    .ministry-card button {
-      border: 1px solid var(--border);
-      background: var(--light-green);
-      color: var(--green);
-      border-radius: 9px;
-      padding: 8px 12px;
-      font-weight: 800;
-    }
-
-    .ministry-card button:hover {
-      background: #d9f2e8;
-    }
-
-    /* =========================================================
-       DETAIL SECTIONS
-       ========================================================= */
-
-    .detail-back-button {
-      border: 1px solid var(--border);
-      background: var(--white);
-      color: var(--green);
-      border-radius: 9px;
-      padding: 9px 14px;
-      font-weight: 800;
-      margin-bottom: 20px;
-    }
-
-    .detail-back-button:hover {
-      background: var(--light-green);
-    }
-
-    .detail-official-box {
-      background: var(--white);
-      border: 1px solid var(--border);
-      border-radius: 14px;
-      padding: 20px;
-      box-shadow: var(--shadow);
-    }
-
-    .detail-official-box h3 {
-      margin: 0 0 8px;
-      color: var(--dark-green);
-    }
-
-    .detail-official-box p {
-      margin: 5px 0;
-      color: var(--muted);
-    }
-
-    .detail-action {
-      margin-top: 15px;
-      border: 0;
-      background: var(--green);
-      color: white;
-      border-radius: 9px;
-      padding: 10px 15px;
-      font-weight: 800;
-    }
-
-    .detail-action:hover {
-      background: var(--dark-green);
-    }
-
-    /* =========================================================
-       TRANSPARENCY
-       ========================================================= */
-
-    .transparency-box {
-      background: var(--white);
-      border: 1px solid var(--border);
-      border-radius: 16px;
-      padding: 25px;
-      box-shadow: var(--shadow);
-    }
-
-    .transparency-grid {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 18px;
-    }
-
-    .transparency-item {
-      text-align: center;
-    }
-
-    .transparency-item strong {
-      display: block;
-      color: var(--green);
-      margin-bottom: 5px;
-    }
-
-    .transparency-item span {
-      color: var(--muted);
-      font-size: 14px;
-    }
-
-    /* =========================================================
-       NOTICE
-       ========================================================= */
-
-    .notice {
-      background: var(--yellow);
-      border: 1px solid var(--yellow-border);
-      border-radius: 14px;
-      padding: 18px;
-      color: #665500;
-    }
-
-    .notice strong {
-      display: block;
-      margin-bottom: 5px;
-    }
-
-    /* =========================================================
-       FOOTER
-       ========================================================= */
-
-    footer {
-      margin-top: 30px;
-      background: #063d2f;
-      color: #dff2eb;
-      padding: 30px 0;
-    }
-
-    .footer-content {
-      display: flex;
-      justify-content: space-between;
-      gap: 20px;
-      align-items: center;
-    }
-
-    footer p {
-      margin: 0;
-      font-size: 13px;
-    }
+  const SUPABASE_PUBLISHABLE_KEY =
+    "sb_publishable_Rb2oZZ6XzXFZSpkNSRgqLQ_njWY-TtY";
 
-    /* =========================================================
-       MOBILE
-       ========================================================= */
+  let db = null;
 
-    @media (max-width: 800px) {
+  let currentLanguage =
+    localStorage.getItem("arthik_language") || "bn";
 
-      .header-inner {
-        min-height: 60px;
-      }
+  let currentSearchFilter = "all";
 
-      nav a {
-        display: none;
-      }
 
-      .stats-grid,
-      .ministry-grid,
-      .transparency-grid {
-        grid-template-columns: 1fr;
-      }
+  /* =========================================================
+     SAFE HTML
+     ========================================================= */
 
-      .hero {
-        padding: 50px 0 40px;
-      }
+  function escapeHtml(value) {
 
-      .hero p {
-        font-size: 15px;
-      }
-
-      .result-top {
-        flex-direction: column;
-      }
-
-      .result-badge {
-        align-self: flex-start;
-      }
-
-      .footer-content {
-        flex-direction: column;
-        text-align: center;
-      }
+    if (value === null || value === undefined) {
+      return "";
     }
-
-    @media (max-width: 600px) {
-
-      .container {
-        width: min(100% - 20px, 1120px);
-      }
-
-      .search-box {
-        flex-direction: column;
-        padding: 8px;
-      }
 
-      .search-box input {
-        width: 100%;
-      }
+    return String(value)
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;")
+      .replace(/'/g, "&#039;");
+  }
 
-      .search-box button {
-        width: 100%;
-      }
 
-      .financial-grid {
-        grid-template-columns: 1fr;
-      }
+  /* =========================================================
+     SAFE URL
+     ========================================================= */
 
-      .stat-number {
-        font-size: 30px;
-      }
+  function safeSourceUrl(value) {
 
-      .section-title {
-        font-size: 24px;
-      }
-
-      .result-card {
-        padding: 16px;
-      }
+    if (!value) {
+      return "";
     }
-  </style>
-</head>
-
-<body>
-
-  <!-- =========================================================
-       HEADER
-       ========================================================= -->
-
-  <header>
-
-    <div class="container header-inner">
-
-      <a href="#" class="logo">
-        আর্থিক স্বচ্ছতা
-      </a>
-
-      <nav>
-
-        <a
-          href="#searchSection"
-          data-bn="অনুসন্ধান"
-          data-en="Search"
-        >
-          অনুসন্ধান
-        </a>
-
-        <a
-          href="#ministries"
-          data-bn="দপ্তর"
-          data-en="Departments"
-        >
-          দপ্তর
-        </a>
-
-        <a
-          href="#transparency"
-          data-bn="স্বচ্ছতা"
-          data-en="Transparency"
-        >
-          স্বচ্ছতা
-        </a>
-
-        <button
-          type="button"
-          class="language-button"
-          id="languageButton"
-        >
-          English
-        </button>
-
-      </nav>
-
-    </div>
-
-  </header>
-
-
-  <!-- =========================================================
-       MAIN
-       ========================================================= -->
-
-  <main>
-
-    <!-- HERO / SEARCH -->
-
-    <section
-      class="hero"
-      id="searchSection"
-    >
-
-      <div class="container">
-
-        <div class="hero-content">
-
-          <span
-            class="hero-badge"
-            data-bn="জনগণের অর্থ, জনগণের জানার অধিকার"
-            data-en="Public money, the public's right to know"
-          >
-            জনগণের অর্থ, জনগণের জানার অধিকার
-          </span>
-
-          <h1
-            data-bn="আর্থিক স্বচ্ছতা"
-            data-en="Financial Transparency"
-          >
-            আর্থিক স্বচ্ছতা
-          </h1>
-
-          <p
-            data-bn="সরকারি কর্মজীবীদের আইনসম্মতভাবে প্রকাশযোগ্য আয়, সম্পদ, দায় ও আর্থিক তথ্যকে সহজভাবে অনুসন্ধান ও যাচাই করার নাগরিক প্ল্যাটফর্ম।"
-            data-en="A citizen platform for searching and reviewing legally publishable income, assets, liabilities and financial information of public officials."
-          >
-            সরকারি কর্মজীবীদের আইনসম্মতভাবে প্রকাশযোগ্য আয়, সম্পদ, দায় ও আর্থিক তথ্যকে সহজভাবে অনুসন্ধান ও যাচাই করার নাগরিক প্ল্যাটফর্ম।
-          </p>
-
-          <div class="search-box">
-
-            <input
-              id="searchInput"
-              type="search"
-              autocomplete="off"
-              maxlength="150"
-              placeholder="কর্মকর্তার নাম বা পদ লিখুন..."
-              data-placeholder-bn="কর্মকর্তার নাম বা পদ লিখুন..."
-              data-placeholder-en="Enter official name or designation..."
-              aria-label="কর্মকর্তা অনুসন্ধান"
-            >
-
-            <button
-              type="button"
-              id="searchButton"
-            >
-              খুঁজুন
-            </button>
-
-          </div>
-
-          <div id="connectionStatus"></div>
-
-        </div>
-
-      </div>
-
-    </section>
-
-
-    <!-- =======================================================
-         STATISTICS
-         ======================================================= -->
-
-    <section class="stats">
-
-      <div class="container">
-
-        <div class="stats-grid">
-
-          <div class="stat-card">
-
-            <span
-              class="stat-number"
-              id="officialCount"
-            >
-              ০
-            </span>
-
-            <span
-              class="stat-label"
-              data-bn="নিবন্ধিত কর্মকর্তা"
-              data-en="Registered officials"
-            >
-              নিবন্ধিত কর্মকর্তা
-            </span>
-
-          </div>
-
-
-          <div class="stat-card">
-
-            <span
-              class="stat-number"
-              id="profileCount"
-            >
-              ০
-            </span>
-
-            <span
-              class="stat-label"
-              data-bn="আর্থিক প্রোফাইল"
-              data-en="Financial profiles"
-            >
-              আর্থিক প্রোফাইল
-            </span>
-
-          </div>
-
-
-          <div class="stat-card">
-
-            <span
-              class="stat-number"
-              id="verifiedCount"
-            >
-              ০
-            </span>
-
-            <span
-              class="stat-label"
-              data-bn="যাচাইকৃত"
-              data-en="Verified"
-            >
-              যাচাইকৃত
-            </span>
-
-          </div>
-
-        </div>
-
-      </div>
-
-    </section>
-
-
-    <!-- =======================================================
-         SEARCH RESULTS
-         ======================================================= -->
-
-    <section id="searchResultsSection">
-
-      <div class="container">
-
-        <h2
-          class="section-title"
-          data-bn="অনুসন্ধানের ফলাফল"
-          data-en="Search results"
-        >
-          অনুসন্ধানের ফলাফল
-        </h2>
-
-        <p
-          class="section-description"
-          data-bn="প্রকাশযোগ্য আর্থিক তথ্য থাকলে তা সংশ্লিষ্ট উৎস ও যাচাইয়ের অবস্থাসহ দেখানো হবে।"
-          data-en="Available publishable financial information is shown with its source and verification status."
-        >
-          প্রকাশযোগ্য আর্থিক তথ্য থাকলে তা সংশ্লিষ্ট উৎস ও যাচাইয়ের অবস্থাসহ দেখানো হবে।
-        </p>
-
-        <div
-          class="results-box"
-          id="searchResults"
-        ></div>
-
-      </div>
-
-    </section>
-
-
-    <!-- =======================================================
-         MINISTRIES
-         ======================================================= -->
-
-    <section id="ministries">
-
-      <div class="container">
-
-        <h2
-          class="section-title"
-          data-bn="পর্যবেক্ষণের ক্ষেত্র"
-          data-en="Areas of monitoring"
-        >
-          পর্যবেক্ষণের ক্ষেত্র
-        </h2>
-
-        <p
-          class="section-description"
-          data-bn="সরকারের বিভিন্ন মন্ত্রণালয় ও দপ্তরের প্রকাশযোগ্য তথ্য ধীরে ধীরে যুক্ত করা হবে।"
-          data-en="Publishable information from different ministries and departments will be added gradually."
-        >
-          সরকারের বিভিন্ন মন্ত্রণালয় ও দপ্তরের প্রকাশযোগ্য তথ্য ধীরে ধীরে যুক্ত করা হবে।
-        </p>
-
-
-        <div class="ministry-grid">
-
-
-          <!-- Agriculture -->
-
-          <div
-            class="ministry-card"
-            onclick="showAgriculture()"
-            style="cursor:pointer;"
-          >
-
-            <h3
-              data-bn="কৃষি"
-              data-en="Agriculture"
-            >
-              কৃষি
-            </h3>
-
-            <p
-              data-bn="কৃষি সংক্রান্ত সরকারি দপ্তর ও কর্মকর্তা"
-              data-en="Government departments and officials related to agriculture"
-            >
-              কৃষি সংক্রান্ত সরকারি দপ্তর ও কর্মকর্তা
-            </p>
-
-          </div>
-
-
-          <!-- Land -->
-
-          <div
-            class="ministry-card"
-            onclick="showLand()"
-            style="cursor:pointer;"
-          >
-
-            <h3
-              data-bn="ভূমি"
-              data-en="Land"
-            >
-              ভূমি
-            </h3>
-
-            <p
-              data-bn="ভূমি প্রশাসন ও সংশ্লিষ্ট কর্মকর্তা"
-              data-en="Land administration and related officials"
-            >
-              ভূমি প্রশাসন ও সংশ্লিষ্ট কর্মকর্তা
-            </p>
-
-          </div>
-
-
-          <!-- Education -->
-
-          <div class="ministry-card">
-
-            <h3
-              data-bn="শিক্ষা"
-              data-en="Education"
-            >
-              শিক্ষা
-            </h3>
-
-            <p
-              data-bn="শিক্ষা প্রশাসন ও সংশ্লিষ্ট কর্মকর্তা"
-              data-en="Education administration and related officials"
-            >
-              শিক্ষা প্রশাসন ও সংশ্লিষ্ট কর্মকর্তা
-            </p>
-
-          </div>
-
-
-          <!-- Power -->
-
-          <div class="ministry-card">
-
-            <h3
-              data-bn="বিদ্যুৎ"
-              data-en="Power"
-            >
-              বিদ্যুৎ
-            </h3>
-
-            <p
-              data-bn="বিদ্যুৎ ও জ্বালানি খাতের সংশ্লিষ্ট দপ্তর"
-              data-en="Relevant departments in the power and energy sector"
-            >
-              বিদ্যুৎ ও জ্বালানি খাতের সংশ্লিষ্ট দপ্তর
-            </p>
-
-          </div>
-
-
-          <!-- Public Administration -->
-
-          <div class="ministry-card">
-
-            <h3
-              data-bn="জনপ্রশাসন"
-              data-en="Public Administration"
-            >
-              জনপ্রশাসন
-            </h3>
-
-            <p
-              data-bn="সরকারি প্রশাসনের প্রকাশযোগ্য তথ্য"
-              data-en="Publishable public administration information"
-            >
-              সরকারি প্রশাসনের প্রকাশযোগ্য তথ্য
-            </p>
-
-          </div>
-
-
-          <!-- Other -->
-
-          <div class="ministry-card">
-
-            <h3
-              data-bn="অন্যান্য দপ্তর"
-              data-en="Other departments"
-            >
-              অন্যান্য দপ্তর
-            </h3>
-
-            <p
-              data-bn="পর্যায়ক্রমে আরও দপ্তর যুক্ত করা হবে"
-              data-en="More departments will be added gradually"
-            >
-              পর্যায়ক্রমে আরও দপ্তর যুক্ত করা হবে
-            </p>
-
-          </div>
-
-
-        </div>
-
-      </div>
-
-    </section>
-
-
-    <!-- =======================================================
-         AGRICULTURE DETAILS
-         ======================================================= -->
-
-    <section
-      id="agricultureDetails"
-      style="display:none;"
-    >
-
-      <div class="container">
-
-        <button
-          type="button"
-          class="detail-back-button"
-          onclick="closeAgriculture()"
-          data-bn="← ফিরে যান"
-          data-en="← Go back"
-        >
-          ← ফিরে যান
-        </button>
-
-
-        <h2
-          class="section-title"
-          data-bn="কৃষি মন্ত্রণালয়"
-          data-en="Ministry of Agriculture"
-        >
-          কৃষি মন্ত্রণালয়
-        </h2>
-
-
-        <p
-          class="section-description"
-          data-bn="কৃষি মন্ত্রণালয়ের অধীন দপ্তর ও প্রকাশযোগ্য কর্মকর্তার তথ্য।"
-          data-en="Departments and publishable official information under the Ministry of Agriculture."
-        >
-          কৃষি মন্ত্রণালয়ের অধীন দপ্তর ও প্রকাশযোগ্য কর্মকর্তার তথ্য।
-        </p>
-
-
-        <div class="results-box">
-
-          <div class="ministry-card">
-
-            <h3
-              data-bn="কৃষি সম্প্রসারণ অধিদপ্তর"
-              data-en="Department of Agricultural Extension"
-            >
-              কৃষি সম্প্রসারণ অধিদপ্তর
-            </h3>
-
-            <p
-              data-bn="কৃষি সম্প্রসারণ কর্মকর্তা ও সংশ্লিষ্ট প্রকাশযোগ্য তথ্য"
-              data-en="Agricultural extension officers and related publishable information"
-            >
-              কৃষি সম্প্রসারণ কর্মকর্তা ও সংশ্লিষ্ট প্রকাশযোগ্য তথ্য
-            </p>
-
-            <button
-              type="button"
-              onclick="showAgricultureOfficials()"
-              style="margin-top:15px;"
-              data-bn="কর্মকর্তা দেখুন"
-              data-en="View officials"
-            >
-              কর্মকর্তা দেখুন
-            </button>
-
-          </div>
-
-        </div>
-
-
-        <div
-          id="agricultureOfficials"
-          style="display:none; margin-top:25px;"
-        >
-
-          <div class="detail-official-box">
-
-            <h3
-              data-bn="কৃষি সম্প্রসারণ অধিদপ্তরের কর্মকর্তা"
-              data-en="Officials of Department of Agricultural Extension"
-            >
-              কৃষি সম্প্রসারণ অধিদপ্তরের কর্মকর্তা
-            </h3>
-
-            <p>
-              <strong>আব্দুল করিম অপু</strong>
-            </p>
-
-            <p
-              data-bn="পদ: কৃষি সম্প্রসারণ কর্মকর্তা"
-              data-en="Designation: Agricultural Extension Officer"
-            >
-              পদ: কৃষি সম্প্রসারণ কর্মকর্তা
-            </p>
-
-            <button
-              type="button"
-              class="detail-action"
-              onclick="
-                document.getElementById('searchInput').value='আব্দুল করিম অপু';
-                document.getElementById('searchButton').click();
-              "
-              data-bn="আর্থিক তথ্য দেখুন"
-              data-en="View financial information"
-            >
-              আর্থিক তথ্য দেখুন
-            </button>
-
-          </div>
-
-        </div>
-
-      </div>
-
-    </section>
-
-
-    <!-- =======================================================
-         LAND DETAILS
-         ======================================================= -->
-
-    <section
-      id="landDetails"
-      style="display:none;"
-    >
-
-      <div class="container">
-
-        <button
-          type="button"
-          class="detail-back-button"
-          onclick="closeLand()"
-          data-bn="← ফিরে যান"
-          data-en="← Go back"
-        >
-          ← ফিরে যান
-        </button>
-
-
-        <h2
-          class="section-title"
-          data-bn="ভূমি মন্ত্রণালয়"
-          data-en="Ministry of Land"
-        >
-          ভূমি মন্ত্রণালয়
-        </h2>
-
-
-        <p
-          class="section-description"
-          data-bn="ভূমি প্রশাসন ও সংশ্লিষ্ট কর্মকর্তাদের প্রকাশযোগ্য তথ্য ধীরে ধীরে যুক্ত করা হবে।"
-          data-en="Publishable information about land administration and related officials will be added gradually."
-        >
-          ভূমি প্রশাসন ও সংশ্লিষ্ট কর্মকর্তাদের প্রকাশযোগ্য তথ্য ধীরে ধীরে যুক্ত করা হবে।
-        </p>
-
-
-        <div class="results-box">
-
-          <div class="ministry-card">
-
-            <h3
-              data-bn="ভূমি প্রশাসন"
-              data-en="Land Administration"
-            >
-              ভূমি প্রশাসন
-            </h3>
-
-            <p
-              data-bn="ভূমি প্রশাসনের কর্মকর্তা ও প্রকাশযোগ্য আর্থিক তথ্য"
-              data-en="Officials and publishable financial information related to land administration"
-            >
-              ভূমি প্রশাসনের কর্মকর্তা ও প্রকাশযোগ্য আর্থিক তথ্য
-            </p>
-
-            <button
-              type="button"
-              class="detail-action"
-              onclick="showLandOfficials()"
-              data-bn="কর্মকর্তা দেখুন"
-              data-en="View officials"
-            >
-              কর্মকর্তা দেখুন
-            </button>
-
-          </div>
-
-        </div>
-
-
-        <div
-          id="landOfficials"
-          style="display:none; margin-top:25px;"
-        >
-
-          <div class="detail-official-box">
-
-            <h3
-              data-bn="ভূমি প্রশাসনের কর্মকর্তা"
-              data-en="Land administration officials"
-            >
-              ভূমি প্রশাসনের কর্মকর্তা
-            </h3>
-
-            <p
-              data-bn="এখানে যাচাইকৃত/প্রকাশযোগ্য কর্মকর্তা তথ্য ধাপে ধাপে যুক্ত করা হবে।"
-              data-en="Verified and publishable official information will be added here gradually."
-            >
-              এখানে যাচাইকৃত/প্রকাশযোগ্য কর্মকর্তা তথ্য ধাপে ধাপে যুক্ত করা হবে।
-            </p>
-
-          </div>
-
-        </div>
-
-      </div>
-
-    </section>
-
-
-    <!-- =======================================================
-         TRANSPARENCY
-         ======================================================= -->
-
-    <section id="transparency">
-
-      <div class="container">
-
-        <h2
-          class="section-title"
-          data-bn="তথ্য যাচাইয়ের নীতি"
-          data-en="Information verification principles"
-        >
-          তথ্য যাচাইয়ের নীতি
-        </h2>
-
-
-        <p
-          class="section-description"
-          data-bn="কোনো আর্থিক অসঙ্গতি দেখা গেলেই সেটিকে অপরাধ বা দুর্নীতির প্রমাণ হিসেবে উপস্থাপন করা হবে না।"
-          data-en="A financial discrepancy will not be presented as proof of wrongdoing or corruption merely because it appears inconsistent."
-        >
-          কোনো আর্থিক অসঙ্গতি দেখা গেলেই সেটিকে অপরাধ বা দুর্নীতির প্রমাণ হিসেবে উপস্থাপন করা হবে না।
-        </p>
-
-
-        <div class="transparency-box">
-
-          <div class="transparency-grid">
-
-
-            <div class="transparency-item">
-
-              <strong
-                data-bn="উৎস"
-                data-en="Source"
-              >
-                উৎস
-              </strong>
-
-              <span
-                data-bn="তথ্য কোথা থেকে এসেছে তা দেখানো হবে।"
-                data-en="The source of information will be shown."
-              >
-                তথ্য কোথা থেকে এসেছে তা দেখানো হবে।
-              </span>
-
-            </div>
-
-
-            <div class="transparency-item">
-
-              <strong
-                data-bn="যাচাই"
-                data-en="Verification"
-              >
-                যাচাই
-              </strong>
-
-              <span
-                data-bn="নথি ও প্রকাশিত তথ্যের সঙ্গে মিলিয়ে দেখা হবে।"
-                data-en="Information will be checked against documents and published sources."
-              >
-                নথি ও প্রকাশিত তথ্যের সঙ্গে মিলিয়ে দেখা হবে।
-              </span>
-
-            </div>
-
-
-            <div class="transparency-item">
-
-              <strong
-                data-bn="গোপনীয়তা"
-                data-en="Privacy"
-              >
-                গোপনীয়তা
-              </strong>
-
-              <span
-                data-bn="ব্যক্তিগত ব্যাংক তথ্য, OTP, PIN বা গোপন credentials প্রকাশ করা হবে না।"
-                data-en="Private bank details, OTPs, PINs or confidential credentials will not be published."
-              >
-                ব্যক্তিগত ব্যাংক তথ্য, OTP, PIN বা গোপন credentials প্রকাশ করা হবে না।
-              </span>
-
-            </div>
-
-
-          </div>
-
-        </div>
-
-      </div>
-
-    </section>
-
-
-    <!-- =======================================================
-         NOTICE
-         ======================================================= -->
-
-    <section>
-
-      <div class="container">
-
-        <div class="notice">
-
-          <strong
-            data-bn="গুরুত্বপূর্ণ নোটিশ"
-            data-en="Important notice"
-          >
-            গুরুত্বপূর্ণ নোটিশ
-          </strong>
-
-          <span
-            data-bn="এটি ডেমো উপাত্ত। বাস্তব সিদ্ধান্ত নেওয়ার আগে মূল নথি ও সর্বশেষ প্রকাশনা মিলিয়ে নিন।"
-            data-en="This is demo data. Check original documents and the latest publications before making real-world decisions."
-          >
-            এটি ডেমো উপাত্ত। বাস্তব সিদ্ধান্ত নেওয়ার আগে মূল নথি ও সর্বশেষ প্রকাশনা মিলিয়ে নিন।
-          </span>
-
-        </div>
-
-      </div>
-
-    </section>
-
-  </main>
-
-
-  <!-- =========================================================
-       FOOTER
-       ========================================================= -->
-
-  <footer>
-
-    <div class="container footer-content">
-
-      <p>
-
-        ©
-        <span id="currentYear"></span>
-
-        <span
-          data-bn="আর্থিক স্বচ্ছতা"
-          data-en="Financial Transparency"
-        >
-          আর্থিক স্বচ্ছতা
-        </span>
-
-      </p>
-
-      <p
-        data-bn="তথ্য • উৎস • যাচাই • স্বচ্ছতা"
-        data-en="Information • Source • Verification • Transparency"
-      >
-        তথ্য • উৎস • যাচাই • স্বচ্ছতা
-      </p>
-
-    </div>
-
-  </footer>
-
-
-  <!-- =========================================================
-       SUPABASE
-       ========================================================= -->
-
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
-
-  <script>
-
-    /* =========================================================
-       1. SUPABASE CONFIGURATION
-       =========================================================
-
-       IMPORTANT:
-       এখানে শুধু তোমার Supabase Publishable Key বসাবে।
-
-       Secret / service_role key কখনো এখানে বসাবে না।
-       ========================================================= */
-
-    const SUPABASE_URL =
-      "https://dlfobjpzxdnnszpqowqd.supabase.co";
-
-    const SUPABASE_PUBLISHABLE_KEY =
-      "sb_publishable_Rb2oZZ6XzXFZSpkNSRgqLQ_njWY-TtY"
-
-
-    let db = null;
-
-
-    let currentLanguage =
-      localStorage.getItem("arthik_language") || "bn";
-
 
-    /* =========================================================
-       2. SAFE HTML ESCAPING
-       ========================================================= */
+    try {
 
-    function escapeHtml(value) {
+      const url = new URL(String(value));
 
       if (
-        value === null ||
-        value === undefined
+        url.protocol !== "https:" &&
+        url.protocol !== "http:"
       ) {
         return "";
       }
 
-      return String(value)
-        .replace(/&/g, "&amp;")
-        .replace(/</g, "&lt;")
-        .replace(/>/g, "&gt;")
-        .replace(/"/g, "&quot;")
-        .replace(/'/g, "&#039;");
+      return url.href;
+
+    } catch (error) {
+
+      return "";
+
     }
+  }
 
 
-    /* =========================================================
-       3. SAFE URL CHECK
-       ========================================================= */
+  /* =========================================================
+     BANGLA NUMBER
+     ========================================================= */
 
-    function safeSourceUrl(value) {
+  function banglaNumber(value) {
 
-      if (!value) {
-        return "";
-      }
-
-      try {
-
-        const url =
-          new URL(String(value));
-
-        if (
-          url.protocol !== "https:" &&
-          url.protocol !== "http:"
-        ) {
-          return "";
-        }
-
-        return url.href;
-
-      } catch (error) {
-
-        return "";
-      }
-    }
+    return String(value)
+      .replace(/0/g, "০")
+      .replace(/1/g, "১")
+      .replace(/2/g, "২")
+      .replace(/3/g, "৩")
+      .replace(/4/g, "৪")
+      .replace(/5/g, "৫")
+      .replace(/6/g, "৬")
+      .replace(/7/g, "৭")
+      .replace(/8/g, "৮")
+      .replace(/9/g, "৯");
+  }
 
 
-    /* =========================================================
-       4. BANGLA NUMBER
-       ========================================================= */
+  /* =========================================================
+     MONEY
+     ========================================================= */
 
-    function banglaNumber(value) {
+  function formatMoney(value) {
 
-      return String(value)
-        .replace(/0/g, "০")
-        .replace(/1/g, "১")
-        .replace(/2/g, "২")
-        .replace(/3/g, "৩")
-        .replace(/4/g, "৪")
-        .replace(/5/g, "৫")
-        .replace(/6/g, "৬")
-        .replace(/7/g, "৭")
-        .replace(/8/g, "৮")
-        .replace(/9/g, "৯");
-    }
+    const amount = Number(value);
 
-
-    /* =========================================================
-       5. MONEY FORMAT
-       ========================================================= */
-
-    function formatMoney(value) {
-
-      const amount =
-        Number(value);
-
-      if (!Number.isFinite(amount)) {
-
-        return currentLanguage === "bn"
-          ? "উল্লেখ নেই"
-          : "Not available";
-      }
-
-      const formatted =
-        new Intl.NumberFormat(
-          currentLanguage === "bn"
-            ? "bn-BD"
-            : "en-US"
-        ).format(amount);
-
-      return (
-        formatted +
-        (
-          currentLanguage === "bn"
-            ? " টাকা"
-            : " BDT"
-        )
-      );
-    }
-
-
-    /* =========================================================
-       6. YEAR FORMAT
-       ========================================================= */
-
-    function formatYear(value) {
-
-      const year =
-        Number(value);
-
-      if (!Number.isFinite(year)) {
-
-        return currentLanguage === "bn"
-          ? "উল্লেখ নেই"
-          : "Not available";
-      }
+    if (!Number.isFinite(amount)) {
 
       return currentLanguage === "bn"
-        ? banglaNumber(year)
-        : String(year);
+        ? "উল্লেখ নেই"
+        : "Not available";
+
     }
 
+    const formatted =
+      new Intl.NumberFormat(
+        currentLanguage === "bn"
+          ? "bn-BD"
+          : "en-US"
+      ).format(amount);
 
-    /* =========================================================
-       7. DATE FORMAT
-       ========================================================= */
+    return formatted +
+      (
+        currentLanguage === "bn"
+          ? " টাকা"
+          : " BDT"
+      );
+  }
 
-    function formatDate(value) {
 
-      if (!value) {
+  /* =========================================================
+     YEAR
+     ========================================================= */
 
-        return currentLanguage === "bn"
-          ? "উল্লেখ নেই"
-          : "Not available";
-      }
+  function formatYear(value) {
 
-      try {
+    const year = Number(value);
 
-        const date =
-          new Date(value);
+    if (!Number.isFinite(year)) {
 
-        if (Number.isNaN(date.getTime())) {
+      return currentLanguage === "bn"
+        ? "উল্লেখ নেই"
+        : "Not available";
 
-          return escapeHtml(value);
-        }
+    }
 
-        return new Intl.DateTimeFormat(
-          currentLanguage === "bn"
-            ? "bn-BD"
-            : "en-US",
-          {
-            year: "numeric",
-            month: "long",
-            day: "numeric"
-          }
-        ).format(date);
+    return currentLanguage === "bn"
+      ? banglaNumber(year)
+      : String(year);
+  }
 
-      } catch (error) {
 
+  /* =========================================================
+     DATE
+     ========================================================= */
+
+  function formatDate(value) {
+
+    if (!value) {
+
+      return currentLanguage === "bn"
+        ? "উল্লেখ নেই"
+        : "Not available";
+
+    }
+
+    try {
+
+      const date = new Date(value);
+
+      if (Number.isNaN(date.getTime())) {
         return escapeHtml(value);
       }
+
+      return new Intl.DateTimeFormat(
+        currentLanguage === "bn"
+          ? "bn-BD"
+          : "en-US",
+        {
+          year: "numeric",
+          month: "long",
+          day: "numeric"
+        }
+      ).format(date);
+
+    } catch (error) {
+
+      return escapeHtml(value);
+
+    }
+  }
+
+
+  /* =========================================================
+     VERIFICATION
+     ========================================================= */
+
+  function verificationInfo(status) {
+
+    if (status === "verified") {
+
+      return {
+        text:
+          currentLanguage === "bn"
+            ? "যাচাইকৃত"
+            : "Verified",
+
+        className:
+          "verification"
+      };
     }
 
 
-    /* =========================================================
-       8. VERIFICATION STATUS
-       ========================================================= */
-
-    function verificationInfo(status) {
-
-      if (status === "verified") {
-
-        return {
-
-          text:
-            currentLanguage === "bn"
-              ? "যাচাইকৃত"
-              : "Verified",
-
-          className:
-            "verification"
-        };
-      }
-
-
-      if (status === "pending") {
-
-        return {
-
-          text:
-            currentLanguage === "bn"
-              ? "প্রমাণ অপেক্ষমাণ"
-              : "Evidence pending",
-
-          className:
-            "verification verification-needed"
-        };
-      }
-
-
-      if (status === "demo") {
-
-        return {
-
-          text:
-            currentLanguage === "bn"
-              ? "ডেমো তথ্য"
-              : "Demo data",
-
-          className:
-            "verification verification-demo"
-        };
-      }
-
+    if (status === "pending") {
 
       return {
-
         text:
           currentLanguage === "bn"
-            ? "প্রমাণ প্রয়োজন"
-            : "Evidence needed",
+            ? "প্রমাণ অপেক্ষমাণ"
+            : "Evidence pending",
 
         className:
           "verification verification-needed"
@@ -1772,1076 +218,1168 @@
     }
 
 
-    /* =========================================================
-       9. CONNECTION STATUS
-       ========================================================= */
+    if (status === "demo") {
 
-    function showConnectionStatus(
-      message,
-      type
-    ) {
+      return {
+        text:
+          currentLanguage === "bn"
+            ? "ডেমো তথ্য"
+            : "Demo data",
 
-      const element =
-        document.getElementById(
-          "connectionStatus"
-        );
-
-      if (!element) {
-        return;
-      }
-
-      element.textContent =
-        message || "";
-
-      element.className =
-        type === "error"
-          ? "status-error"
-          : type === "success"
-          ? "status-success"
-          : "";
+        className:
+          "verification verification-demo"
+      };
     }
 
 
-    /* =========================================================
-       10. LANGUAGE SYSTEM
-       ========================================================= */
+    return {
+      text:
+        currentLanguage === "bn"
+          ? "প্রমাণ প্রয়োজন"
+          : "Evidence needed",
 
-    function setLanguage(language) {
-
-      currentLanguage =
-        language === "en"
-          ? "en"
-          : "bn";
+      className:
+        "verification verification-needed"
+    };
+  }
 
 
-      localStorage.setItem(
-        "arthik_language",
-        currentLanguage
+  /* =========================================================
+     CONNECTION STATUS
+     ========================================================= */
+
+  function showConnectionStatus(message, type) {
+
+    const element =
+      document.getElementById(
+        "connectionStatus"
       );
 
+    if (!element) {
+      return;
+    }
 
-      document.documentElement.lang =
-        currentLanguage;
+    element.textContent =
+      message || "";
 
-
-      document
-        .querySelectorAll(
-          "[data-bn][data-en]"
-        )
-        .forEach(
-          function(element) {
-
-            element.textContent =
-              currentLanguage === "bn"
-                ? element.getAttribute("data-bn")
-                : element.getAttribute("data-en");
-
-          }
-        );
+    element.className =
+      type === "error"
+        ? "status-error"
+        : type === "success"
+        ? "status-success"
+        : "";
+  }
 
 
-      const searchInput =
-        document.getElementById(
-          "searchInput"
-        );
+  /* =========================================================
+     GLOBAL SEARCH UI
+     ========================================================= */
 
+  function setupGlobalSearchUI() {
 
-      if (searchInput) {
+    const searchBox =
+      document.querySelector(
+        ".search-box"
+      );
 
-        searchInput.placeholder =
-          currentLanguage === "bn"
-            ? searchInput.getAttribute(
-                "data-placeholder-bn"
-              )
-            : searchInput.getAttribute(
-                "data-placeholder-en"
-              );
-      }
-
-
-      const languageButton =
-        document.getElementById(
-          "languageButton"
-        );
-
-
-      if (languageButton) {
-
-        languageButton.textContent =
-          currentLanguage === "bn"
-            ? "English"
-            : "বাংলা";
-      }
-
-
-      if (db) {
-
-        loadStatistics();
-      }
+    if (!searchBox) {
+      return;
     }
 
 
-    /* =========================================================
-       11. STATISTICS
-       ========================================================= */
+    if (
+      document.getElementById(
+        "globalSearchFilters"
+      )
+    ) {
+      return;
+    }
 
-    async function loadStatistics() {
 
-      if (!db) {
-        return;
+    const style =
+      document.createElement("style");
+
+    style.textContent = `
+
+      #globalSearchFilters {
+        display:flex;
+        flex-wrap:wrap;
+        justify-content:center;
+        gap:8px;
+        margin:14px auto 0;
+        max-width:760px;
       }
 
+      .global-filter-btn {
+        border:1px solid var(--border);
+        background:var(--white);
+        color:var(--text);
+        padding:7px 12px;
+        border-radius:999px;
+        cursor:pointer;
+        font-size:13px;
+        font-weight:800;
+        transition:0.2s;
+      }
 
-      try {
+      .global-filter-btn:hover {
+        background:var(--light-green);
+        color:var(--green);
+      }
 
-        const officialsResult =
-          await db
-            .from("officials")
-            .select(
-              "id",
-              {
-                count: "exact",
-                head: true
-              }
-            );
+      .global-filter-btn.active {
+        background:var(--green);
+        color:white;
+        border-color:var(--green);
+      }
 
+      .search-limit-note {
+        text-align:center;
+        color:var(--muted);
+        font-size:12px;
+        margin-top:8px;
+      }
 
-        const profilesResult =
-          await db
-            .from("financial_profiles")
-            .select(
-              "id",
-              {
-                count: "exact",
-                head: true
-              }
-            );
+      .global-result-heading {
+        margin:22px 0 10px;
+        color:var(--dark-green);
+        font-size:18px;
+        font-weight:900;
+      }
 
+      .global-mini-card {
+        background:var(--white);
+        border:1px solid var(--border);
+        border-radius:14px;
+        padding:16px;
+        box-shadow:var(--shadow);
+      }
 
-        /*
-          Verified count নতুন financial_records
-          এবং পুরোনো financial_profiles—দুটোই
-          বিবেচনা করবে।
-        */
+      .global-mini-card h3 {
+        margin:0 0 5px;
+        color:var(--dark-green);
+        font-size:18px;
+      }
 
-        const verifiedRecordsResult =
-          await db
-            .from("financial_records")
-            .select(
-              "id",
-              {
-                count: "exact",
-                head: true
-              }
-            )
-            .eq(
-              "verification_status",
-              "verified"
-            );
+      .global-mini-card p {
+        margin:4px 0;
+        color:var(--muted);
+        font-size:14px;
+      }
 
+      .global-financial-card {
+        background:var(--white);
+        border:1px solid var(--border);
+        border-radius:14px;
+        padding:17px;
+        box-shadow:var(--shadow);
+      }
 
-        const verifiedProfilesResult =
-          await db
-            .from("financial_profiles")
-            .select(
-              "id",
-              {
-                count: "exact",
-                head: true
-              }
-            )
-            .eq(
-              "verification_status",
-              "verified"
-            );
+      .global-financial-card h3 {
+        margin:0 0 5px;
+        color:var(--dark-green);
+      }
 
+      .global-financial-meta {
+        display:grid;
+        gap:6px;
+        margin-top:10px;
+        color:var(--muted);
+        font-size:13px;
+      }
 
-        if (officialsResult.error) {
+      @media(max-width:600px) {
 
-          console.error(
-            "Officials count error:",
-            officialsResult.error
-          );
+        #globalSearchFilters {
+          justify-content:flex-start;
         }
 
-
-        if (profilesResult.error) {
-
-          console.error(
-            "Profiles count error:",
-            profilesResult.error
-          );
+        .global-filter-btn {
+          font-size:12px;
+          padding:7px 10px;
         }
 
-
-        if (verifiedRecordsResult.error) {
-
-          console.error(
-            "Verified records count error:",
-            verifiedRecordsResult.error
-          );
-        }
-
-
-        if (verifiedProfilesResult.error) {
-
-          console.error(
-            "Verified profiles count error:",
-            verifiedProfilesResult.error
-          );
-        }
-
-
-        const officialCount =
-          officialsResult.count || 0;
-
-
-        const profileCount =
-          profilesResult.count || 0;
-
-
-        /*
-          বর্তমানে financial_records-এ একই
-          verified profile-এর একাধিক record থাকতে পারে।
-          তাই এখানে শুধু verified records-এর সংখ্যা
-          দেখানো হবে না; আপাতত profile-based count
-          ব্যবহার করা হবে যাতে "যাচাইকৃত" মানে
-          যাচাইকৃত financial profile থাকে।
-        */
-
-        const verifiedCount =
-          verifiedProfilesResult.error
-            ? 0
-            : verifiedProfilesResult.count || 0;
-
-
-        const officialElement =
-          document.getElementById(
-            "officialCount"
-          );
-
-
-        const profileElement =
-          document.getElementById(
-            "profileCount"
-          );
-
-
-        const verifiedElement =
-          document.getElementById(
-            "verifiedCount"
-          );
-
-
-        if (officialElement) {
-
-          officialElement.textContent =
-            currentLanguage === "bn"
-              ? banglaNumber(officialCount)
-              : officialCount;
-        }
-
-
-        if (profileElement) {
-
-          profileElement.textContent =
-            currentLanguage === "bn"
-              ? banglaNumber(profileCount)
-              : profileCount;
-        }
-
-
-        if (verifiedElement) {
-
-          verifiedElement.textContent =
-            currentLanguage === "bn"
-              ? banglaNumber(verifiedCount)
-              : verifiedCount;
-        }
-
-
-      } catch (error) {
-
-        console.error(
-          "Statistics error:",
-          error
-        );
-      }
-    }
-
-
-    /* =========================================================
-       12. AGRICULTURE
-       ========================================================= */
-
-    function showAgriculture() {
-
-      const ministries =
-        document.getElementById(
-          "ministries"
-        );
-
-
-      const searchResultsSection =
-        document.getElementById(
-          "searchResultsSection"
-        );
-
-
-      const agricultureDetails =
-        document.getElementById(
-          "agricultureDetails"
-        );
-
-
-      const landDetails =
-        document.getElementById(
-          "landDetails"
-        );
-
-
-      const agricultureOfficials =
-        document.getElementById(
-          "agricultureOfficials"
-        );
-
-
-      const landOfficials =
-        document.getElementById(
-          "landOfficials"
-        );
-
-
-      if (ministries) {
-
-        ministries.style.display =
-          "none";
       }
 
+    `;
 
-      if (searchResultsSection) {
+    document.head.appendChild(style);
 
-        searchResultsSection.style.display =
-          "none";
+
+    const filters =
+      document.createElement("div");
+
+    filters.id =
+      "globalSearchFilters";
+
+
+    const filterList = [
+
+      {
+        value:"all",
+        bn:"সব",
+        en:"All"
+      },
+
+      {
+        value:"ministry",
+        bn:"মন্ত্রণালয়",
+        en:"Ministry"
+      },
+
+      {
+        value:"department",
+        bn:"দপ্তর",
+        en:"Department"
+      },
+
+      {
+        value:"official",
+        bn:"কর্মকর্তা",
+        en:"Official"
+      },
+
+      {
+        value:"financial",
+        bn:"আর্থিক তথ্য",
+        en:"Financial"
+      },
+
+      {
+        value:"source",
+        bn:"উৎস",
+        en:"Source"
       }
 
+    ];
 
-      if (landDetails) {
 
-        landDetails.style.display =
-          "none";
-      }
-
-
-      if (landOfficials) {
-
-        landOfficials.style.display =
-          "none";
-      }
-
-
-      if (agricultureOfficials) {
-
-        agricultureOfficials.style.display =
-          "none";
-      }
-
-
-      if (agricultureDetails) {
-
-        agricultureDetails.style.display =
-          "block";
-
-
-        agricultureDetails.scrollIntoView({
-          behavior: "smooth",
-          block: "start"
-        });
-
-      }
-    }
-
-
-    function closeAgriculture() {
-
-      const ministries =
-        document.getElementById(
-          "ministries"
-        );
-
-
-      const agricultureDetails =
-        document.getElementById(
-          "agricultureDetails"
-        );
-
-
-      const agricultureOfficials =
-        document.getElementById(
-          "agricultureOfficials"
-        );
-
-
-      if (agricultureDetails) {
-
-        agricultureDetails.style.display =
-          "none";
-      }
-
-
-      if (agricultureOfficials) {
-
-        agricultureOfficials.style.display =
-          "none";
-      }
-
-
-      if (ministries) {
-
-        ministries.style.display =
-          "block";
-
-
-        ministries.scrollIntoView({
-          behavior: "smooth",
-          block: "start"
-        });
-
-      }
-    }
-
-
-    function showAgricultureOfficials() {
-
-      const agricultureOfficials =
-        document.getElementById(
-          "agricultureOfficials"
-        );
-
-
-      if (agricultureOfficials) {
-
-        agricultureOfficials.style.display =
-          "block";
-
-
-        agricultureOfficials.scrollIntoView({
-          behavior: "smooth",
-          block: "start"
-        });
-
-      }
-    }
-
-
-    /* =========================================================
-       13. LAND
-       ========================================================= */
-
-    function showLand() {
-
-      const ministries =
-        document.getElementById(
-          "ministries"
-        );
-
-
-      const searchResultsSection =
-        document.getElementById(
-          "searchResultsSection"
-        );
-
-
-      const agricultureDetails =
-        document.getElementById(
-          "agricultureDetails"
-        );
-
-
-      const landDetails =
-        document.getElementById(
-          "landDetails"
-        );
-
-
-      const agricultureOfficials =
-        document.getElementById(
-          "agricultureOfficials"
-        );
-
-
-      const landOfficials =
-        document.getElementById(
-          "landOfficials"
-        );
-
-
-      if (ministries) {
-
-        ministries.style.display =
-          "none";
-      }
-
-
-      if (searchResultsSection) {
-
-        searchResultsSection.style.display =
-          "none";
-      }
-
-
-      if (agricultureDetails) {
-
-        agricultureDetails.style.display =
-          "none";
-      }
-
-
-      if (agricultureOfficials) {
-
-        agricultureOfficials.style.display =
-          "none";
-      }
-
-
-      if (landOfficials) {
-
-        landOfficials.style.display =
-          "none";
-      }
-
-
-      if (landDetails) {
-
-        landDetails.style.display =
-          "block";
-
-
-        landDetails.scrollIntoView({
-          behavior: "smooth",
-          block: "start"
-        });
-
-      }
-    }
-
-
-    function closeLand() {
-
-      const ministries =
-        document.getElementById(
-          "ministries"
-        );
-
-
-      const landDetails =
-        document.getElementById(
-          "landDetails"
-        );
-
-
-      const landOfficials =
-        document.getElementById(
-          "landOfficials"
-        );
-
-
-      if (landDetails) {
-
-        landDetails.style.display =
-          "none";
-      }
-
-
-      if (landOfficials) {
-
-        landOfficials.style.display =
-          "none";
-      }
-
-
-      if (ministries) {
-
-        ministries.style.display =
-          "block";
-
-
-        ministries.scrollIntoView({
-          behavior: "smooth",
-          block: "start"
-        });
-
-      }
-    }
-
-
-    function showLandOfficials() {
-
-      const landOfficials =
-        document.getElementById(
-          "landOfficials"
-        );
-
-
-      if (landOfficials) {
-
-        landOfficials.style.display =
-          "block";
-
-
-        landOfficials.scrollIntoView({
-          behavior: "smooth",
-          block: "start"
-        });
-
-      }
-    }
-
-
-    /* =========================================================
-       14. SEARCH OFFICIAL
-       ========================================================= */
-
-    async function searchOfficer() {
-
-      if (!db) {
-
-        showConnectionStatus(
-          currentLanguage === "bn"
-            ? "Supabase এখনো সংযুক্ত নয়। Publishable Key পরীক্ষা করুন।"
-            : "Supabase is not connected yet. Check the Publishable Key.",
-          "error"
-        );
-
-        return;
-      }
-
-
-      const input =
-        document.getElementById(
-          "searchInput"
-        );
-
+    filterList.forEach(function(item) {
 
       const button =
-        document.getElementById(
-          "searchButton"
-        );
+        document.createElement("button");
 
+      button.type = "button";
 
-      if (!input || !button) {
+      button.className =
+        "global-filter-btn";
 
-        return;
-      }
+      button.dataset.filter =
+        item.value;
 
+      button.dataset.bn =
+        item.bn;
 
-      const value =
-        input.value.trim();
-
-
-      if (!value) {
-
-        showConnectionStatus(
-          currentLanguage === "bn"
-            ? "অনুগ্রহ করে কর্মকর্তার নাম বা পদ লিখুন।"
-            : "Please enter an official's name or designation.",
-          "error"
-        );
-
-
-        input.focus();
-
-        return;
-      }
-
-
-      /*
-        Search injection-এর ঝুঁকি কমানোর জন্য
-        wildcard character সরানো হচ্ছে।
-      */
-
-      const searchValue =
-        value
-          .replace(/[%_]/g, "")
-          .trim();
-
-
-      if (!searchValue) {
-
-        showConnectionStatus(
-          currentLanguage === "bn"
-            ? "অনুসন্ধানের জন্য সঠিক নাম বা পদ লিখুন।"
-            : "Please enter a valid name or designation.",
-          "error"
-        );
-
-        return;
-      }
-
-
-      button.disabled =
-        true;
-
+      button.dataset.en =
+        item.en;
 
       button.textContent =
         currentLanguage === "bn"
-          ? "খোঁজা হচ্ছে..."
-          : "Searching...";
+          ? item.bn
+          : item.en;
 
 
-      showConnectionStatus("");
+      if (item.value === "all") {
+        button.classList.add("active");
+      }
 
 
-      try {
+      button.addEventListener(
+        "click",
+        function() {
 
-        const result =
-          await db
-            .from("officials")
-            .select(
-              "id, name, designation, department_id"
+          currentSearchFilter =
+            item.value;
+
+          document
+            .querySelectorAll(
+              ".global-filter-btn"
             )
-            .or(
-              "name.ilike.%" +
-              searchValue +
-              "%,designation.ilike.%" +
-              searchValue +
-              "%"
-            )
-            .limit(50);
+            .forEach(function(btn) {
 
-
-        if (result.error) {
-
-          console.error(
-            "Official search error:",
-            result.error
-          );
-
-
-          showConnectionStatus(
-            currentLanguage === "bn"
-              ? "কর্মকর্তার তথ্য খুঁজতে সমস্যা হয়েছে। Supabase Table/RLS পরীক্ষা করুন।"
-              : "There was a problem searching officials. Check the Supabase table/RLS settings.",
-            "error"
-          );
-
-
-          displaySearchResults([]);
-
-          return;
-        }
-
-
-        const officers =
-          result.data || [];
-
-
-        if (!officers.length) {
-
-          displaySearchResults([]);
-
-          return;
-        }
-
-
-        /*
-          প্রতিটি কর্মকর্তার জন্য:
-          ১. পুরোনো financial_profiles
-          ২. নতুন financial_records
-
-          দুটোই আনা হবে।
-        */
-
-        for (
-          const officer of officers
-        ) {
-
-
-          /* ---------------------------------------------
-             OLD FINANCIAL PROFILE
-             --------------------------------------------- */
-
-          const profileResult =
-            await db
-              .from("financial_profiles")
-              .select(
-                "id, official_id, income, assets_value, liabilities_value, report_year, verification_status, source, source_url"
-              )
-              .eq(
-                "official_id",
-                officer.id
-              )
-              .order(
-                "report_year",
-                {
-                  ascending: false
-                }
-              )
-              .limit(1);
-
-
-          if (profileResult.error) {
-
-            console.error(
-              "Financial profile error for official:",
-              officer.id,
-              profileResult.error
-            );
-
-
-            officer.financial_profile =
-              null;
-
-          } else {
-
-            officer.financial_profile =
-              (
-                profileResult.data &&
-                profileResult.data.length
-              )
-                ? profileResult.data[0]
-                : null;
-          }
-
-
-          /* ---------------------------------------------
-             NEW FINANCIAL RECORDS
-             --------------------------------------------- */
-
-          const recordsResult =
-            await db
-              .from("financial_records")
-              .select(
-                "id, official_id, profile_id, type, amount, asset_type, source, source_url, publication_date, report_year, verification_status"
-              )
-              .eq(
-                "official_id",
-                officer.id
-              )
-              .order(
-                "report_year",
-                {
-                  ascending: false
-                }
-              )
-              .order(
-                "created_at",
-                {
-                  ascending: false
-                }
+              btn.classList.toggle(
+                "active",
+                btn.dataset.filter ===
+                  currentSearchFilter
               );
 
-
-          if (recordsResult.error) {
-
-            console.error(
-              "Financial records error for official:",
-              officer.id,
-              recordsResult.error
-            );
-
-
-            officer.financial_records =
-              [];
-
-          } else {
-
-            officer.financial_records =
-              recordsResult.data || [];
-          }
+            });
 
         }
+      );
 
 
-        displaySearchResults(
-          officers
-        );
+      filters.appendChild(button);
+
+    });
 
 
-      } catch (error) {
-
-        console.error(
-          "Unexpected search error:",
-          error
-        );
+    searchBox.insertAdjacentElement(
+      "afterend",
+      filters
+    );
 
 
-        showConnectionStatus(
-          currentLanguage === "bn"
-            ? "অনুসন্ধানের সময় সমস্যা হয়েছে।"
-            : "An error occurred during the search.",
-          "error"
-        );
+    const note =
+      document.createElement("div");
+
+    note.id =
+      "searchLimitNote";
+
+    note.className =
+      "search-limit-note";
+
+    note.dataset.bn =
+      "প্রতি বিভাগে সর্বোচ্চ ২৫টি ফলাফল দেখানো হবে।";
+
+    note.dataset.en =
+      "Maximum 25 results are shown per category.";
+
+    note.textContent =
+      currentLanguage === "bn"
+        ? note.dataset.bn
+        : note.dataset.en;
 
 
-      } finally {
+    filters.insertAdjacentElement(
+      "afterend",
+      note
+    );
 
-        button.disabled =
-          false;
 
+    const input =
+      document.getElementById(
+        "searchInput"
+      );
+
+    if (input) {
+
+      input.setAttribute(
+        "data-placeholder-bn",
+        "মন্ত্রণালয়, দপ্তর, কর্মকর্তা, পদ, আয়, সম্পদ বা রিপোর্টের বছর খুঁজুন..."
+      );
+
+      input.setAttribute(
+        "data-placeholder-en",
+        "Search ministry, department, official, designation, income, assets or report year..."
+      );
+
+      input.placeholder =
+        currentLanguage === "bn"
+          ? input.getAttribute(
+              "data-placeholder-bn"
+            )
+          : input.getAttribute(
+              "data-placeholder-en"
+            );
+
+    }
+
+  }
+
+
+  /* =========================================================
+     UPDATE FILTER LANGUAGE
+     ========================================================= */
+
+  function updateGlobalSearchLanguage() {
+
+    document
+      .querySelectorAll(
+        ".global-filter-btn"
+      )
+      .forEach(function(button) {
 
         button.textContent =
           currentLanguage === "bn"
-            ? "খুঁজুন"
-            : "Search";
-      }
+            ? button.dataset.bn
+            : button.dataset.en;
+
+      });
+
+
+    const note =
+      document.getElementById(
+        "searchLimitNote"
+      );
+
+    if (note) {
+
+      note.textContent =
+        currentLanguage === "bn"
+          ? note.dataset.bn
+          : note.dataset.en;
 
     }
 
 
-    /* =========================================================
-       15. RENDER ONE FINANCIAL RECORD
-       ========================================================= */
+    const input =
+      document.getElementById(
+        "searchInput"
+      );
 
-    function renderFinancialRecord(
-      record
-    ) {
+    if (input) {
 
-      const verification =
-        verificationInfo(
-          record.verification_status
-        );
-
-
-      const source =
-        escapeHtml(
-          record.source ||
-          (
-            currentLanguage === "bn"
-              ? "উৎস উল্লেখ নেই"
-              : "Source unavailable"
-          )
-        );
-
-
-      const sourceUrl =
-        safeSourceUrl(
-          record.source_url
-        );
-
-
-      const sourceLinkHtml =
-        sourceUrl
-          ? `
-            <a
-              class="source-link"
-              href="${escapeHtml(sourceUrl)}"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              ${
-                currentLanguage === "bn"
-                  ? "উৎসের লিংক খুলুন"
-                  : "Open source link"
-              }
-            </a>
-          `
-          : (
-              currentLanguage === "bn"
-                ? "লিংক নেই"
-                : "No link"
+      input.placeholder =
+        currentLanguage === "bn"
+          ? input.getAttribute(
+              "data-placeholder-bn"
+            )
+          : input.getAttribute(
+              "data-placeholder-en"
             );
 
+    }
 
-      const publicationDate =
-        formatDate(
-          record.publication_date
-        );
+  }
 
 
-      const reportYear =
-        formatYear(
-          record.report_year
-        );
+  /* =========================================================
+     LANGUAGE
+     ========================================================= */
+
+  function setLanguage(language) {
+
+    currentLanguage =
+      language === "en"
+        ? "en"
+        : "bn";
 
 
-      const assetType =
-        escapeHtml(
-          record.asset_type ||
-          (
-            currentLanguage === "bn"
-              ? "সাধারণ সম্পদ"
-              : "General asset"
-          )
-        );
+    localStorage.setItem(
+      "arthik_language",
+      currentLanguage
+    );
 
 
-      let typeLabel =
+    document.documentElement.lang =
+      currentLanguage;
+
+
+    document
+      .querySelectorAll(
+        "[data-bn][data-en]"
+      )
+      .forEach(function(element) {
+
+        element.textContent =
+          currentLanguage === "bn"
+            ? element.getAttribute("data-bn")
+            : element.getAttribute("data-en");
+
+      });
+
+
+    const languageButton =
+      document.getElementById(
+        "languageButton"
+      );
+
+    if (languageButton) {
+
+      languageButton.textContent =
         currentLanguage === "bn"
-          ? "আয়"
-          : "Income";
+          ? "English"
+          : "বাংলা";
+
+    }
 
 
-      if (
-        record.type === "asset"
-      ) {
+    updateGlobalSearchLanguage();
 
-        typeLabel =
+
+    if (db) {
+      loadStatistics();
+    }
+
+  }
+
+
+  /* =========================================================
+     STATISTICS
+     ========================================================= */
+
+  async function loadStatistics() {
+
+    if (!db) {
+      return;
+    }
+
+
+    try {
+
+      const officialsResult =
+        await db
+          .from("officials")
+          .select("id", {
+            count:"exact",
+            head:true
+          });
+
+
+      const profilesResult =
+        await db
+          .from("financial_profiles")
+          .select("id", {
+            count:"exact",
+            head:true
+          });
+
+
+      const verifiedResult =
+        await db
+          .from("financial_profiles")
+          .select("id", {
+            count:"exact",
+            head:true
+          })
+          .eq(
+            "verification_status",
+            "verified"
+          );
+
+
+      const officialCount =
+        officialsResult.count || 0;
+
+      const profileCount =
+        profilesResult.count || 0;
+
+      const verifiedCount =
+        verifiedResult.count || 0;
+
+
+      const officialElement =
+        document.getElementById(
+          "officialCount"
+        );
+
+      const profileElement =
+        document.getElementById(
+          "profileCount"
+        );
+
+      const verifiedElement =
+        document.getElementById(
+          "verifiedCount"
+        );
+
+
+      if (officialElement) {
+
+        officialElement.textContent =
           currentLanguage === "bn"
-            ? "সম্পদ"
-            : "Asset";
+            ? banglaNumber(
+                officialCount
+              )
+            : officialCount;
+
       }
 
 
-      if (
-        record.type === "liability"
-      ) {
+      if (profileElement) {
 
-        typeLabel =
+        profileElement.textContent =
           currentLanguage === "bn"
-            ? "দায়"
-            : "Liability";
+            ? banglaNumber(
+                profileCount
+              )
+            : profileCount;
+
       }
 
 
-      return `
+      if (verifiedElement) {
 
-        <div class="financial-item">
+        verifiedElement.textContent =
+          currentLanguage === "bn"
+            ? banglaNumber(
+                verifiedCount
+              )
+            : verifiedCount;
 
-          <span class="financial-label">
-            ${typeLabel}
-          </span>
+      }
+
+    } catch (error) {
+
+      console.error(
+        "Statistics error:",
+        error
+      );
+
+    }
+
+  }
 
 
-          <strong class="financial-value">
-            ${formatMoney(record.amount)}
-          </strong>
+  /* =========================================================
+     TYPE DETECTION
+     ========================================================= */
+
+  function getFinancialType(term) {
+
+    const value =
+      term.toLowerCase();
+
+
+    if (
+      value === "আয়" ||
+      value === "আয়" ||
+      value === "income"
+    ) {
+      return "income";
+    }
+
+
+    if (
+      value === "সম্পদ" ||
+      value === "asset" ||
+      value === "assets"
+    ) {
+      return "asset";
+    }
+
+
+    if (
+      value === "দায়" ||
+      value === "দায়" ||
+      value === "liability" ||
+      value === "liabilities"
+    ) {
+      return "liability";
+    }
+
+
+    return null;
+  }
+
+
+  /* =========================================================
+     GET OFFICIAL DETAILS
+     ========================================================= */
+
+  async function loadOfficialFinancialData(
+    officer
+  ) {
+
+    const profileResult =
+      await db
+        .from("financial_profiles")
+        .select(
+          "id, official_id, income, assets_value, liabilities_value, report_year, verification_status, source, source_url"
+        )
+        .eq(
+          "official_id",
+          officer.id
+        )
+        .order(
+          "report_year",
+          {
+            ascending:false
+          }
+        )
+        .limit(1);
+
+
+    const recordsResult =
+      await db
+        .from("financial_records")
+        .select(
+          "id, official_id, profile_id, type, amount, asset_type, source, source_url, publication_date, report_year, verification_status"
+        )
+        .eq(
+          "official_id",
+          officer.id
+        )
+        .order(
+          "report_year",
+          {
+            ascending:false
+          }
+        )
+        .order(
+          "created_at",
+          {
+            ascending:false
+          }
+        );
+
+
+    officer.financial_profile =
+      profileResult.data &&
+      profileResult.data.length
+        ? profileResult.data[0]
+        : null;
+
+
+    officer.financial_records =
+      recordsResult.data || [];
+
+
+    return officer;
+
+  }
+
+
+  /* =========================================================
+     RENDER FINANCIAL RECORD
+     ========================================================= */
+
+  function renderFinancialRecord(
+    record
+  ) {
+
+    const verification =
+      verificationInfo(
+        record.verification_status
+      );
+
+
+    const source =
+      escapeHtml(
+        record.source ||
+        (
+          currentLanguage === "bn"
+            ? "উৎস উল্লেখ নেই"
+            : "Source unavailable"
+        )
+      );
+
+
+    const sourceUrl =
+      safeSourceUrl(
+        record.source_url
+      );
+
+
+    const sourceLink =
+      sourceUrl
+        ? `
+          <a
+            class="source-link"
+            href="${escapeHtml(sourceUrl)}"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            ${
+              currentLanguage === "bn"
+                ? "উৎসের লিংক খুলুন"
+                : "Open source link"
+            }
+          </a>
+        `
+        :
+        (
+          currentLanguage === "bn"
+            ? "লিংক নেই"
+            : "No link"
+        );
+
+
+    let typeLabel =
+      currentLanguage === "bn"
+        ? "আয়"
+        : "Income";
+
+
+    if (record.type === "asset") {
+
+      typeLabel =
+        currentLanguage === "bn"
+          ? "সম্পদ"
+          : "Asset";
+
+    }
+
+
+    if (record.type === "liability") {
+
+      typeLabel =
+        currentLanguage === "bn"
+          ? "দায়"
+          : "Liability";
+
+    }
+
+
+    return `
+
+      <div class="financial-item">
+
+        <span class="financial-label">
+          ${typeLabel}
+        </span>
+
+        <strong class="financial-value">
+          ${formatMoney(record.amount)}
+        </strong>
+
+
+        ${
+          record.type === "asset"
+            ? `
+              <div
+                style="
+                  margin-top:6px;
+                  color:var(--muted);
+                  font-size:12px;
+                "
+              >
+                ${
+                  currentLanguage === "bn"
+                    ? "ধরন: "
+                    : "Type: "
+                }
+
+                ${escapeHtml(
+                  record.asset_type ||
+                  (
+                    currentLanguage === "bn"
+                      ? "সাধারণ সম্পদ"
+                      : "General asset"
+                  )
+                )}
+
+              </div>
+            `
+            : ""
+        }
+
+
+        <div
+          style="
+            margin-top:10px;
+            color:var(--muted);
+            font-size:12px;
+            line-height:1.7;
+          "
+        >
+
+          <div>
+            ${
+              currentLanguage === "bn"
+                ? "রিপোর্টের বছর: "
+                : "Report year: "
+            }
+
+            <strong>
+              ${formatYear(
+                record.report_year
+              )}
+            </strong>
+          </div>
+
+
+          <div>
+            ${
+              currentLanguage === "bn"
+                ? "প্রকাশের তারিখ: "
+                : "Publication date: "
+            }
+
+            ${formatDate(
+              record.publication_date
+            )}
+          </div>
+
+
+          <div>
+            ${
+              currentLanguage === "bn"
+                ? "যাচাই: "
+                : "Verification: "
+            }
+
+            <span
+              class="${verification.className}"
+            >
+              ${verification.text}
+            </span>
+          </div>
+
+
+          <div>
+            ${
+              currentLanguage === "bn"
+                ? "উৎস: "
+                : "Source: "
+            }
+
+            <strong>
+              ${source}
+            </strong>
+          </div>
+
+
+          <div>
+            ${
+              currentLanguage === "bn"
+                ? "উৎসের লিংক: "
+                : "Source link: "
+            }
+
+            ${sourceLink}
+          </div>
+
+        </div>
+
+      </div>
+
+    `;
+  }
+
+
+  /* =========================================================
+     RENDER OFFICIAL
+     ========================================================= */
+
+  function renderOfficial(
+    officer
+  ) {
+
+    const name =
+      escapeHtml(
+        officer.name ||
+        (
+          currentLanguage === "bn"
+            ? "নাম নেই"
+            : "Name unavailable"
+        )
+      );
+
+
+    const designation =
+      escapeHtml(
+        officer.designation ||
+        (
+          currentLanguage === "bn"
+            ? "পদ উল্লেখ নেই"
+            : "Designation unavailable"
+        )
+      );
+
+
+    const records =
+      Array.isArray(
+        officer.financial_records
+      )
+        ? officer.financial_records
+        : [];
+
+
+    const profile =
+      officer.financial_profile;
+
+
+    let financialHtml = "";
+
+
+    if (records.length) {
+
+      const income =
+        records.filter(
+          r => r.type === "income"
+        );
+
+      const assets =
+        records.filter(
+          r => r.type === "asset"
+        );
+
+      const liabilities =
+        records.filter(
+          r => r.type === "liability"
+        );
+
+
+      financialHtml = `
+
+        <div class="financial-profile">
+
+          <div class="financial-title">
+            ${
+              currentLanguage === "bn"
+                ? "আর্থিক তথ্য"
+                : "Financial information"
+            }
+          </div>
 
 
           ${
-            record.type === "asset"
+            income.length
               ? `
                 <div
                   style="
-                    margin-top:6px;
-                    color:var(--muted);
-                    font-size:12px;
+                    margin:15px 0 8px;
+                    color:var(--green);
+                    font-weight:900;
                   "
                 >
                   ${
                     currentLanguage === "bn"
-                      ? "ধরন: "
-                      : "Type: "
+                      ? "আয়"
+                      : "Income"
                   }
+                </div>
 
-                  ${assetType}
+                <div class="financial-grid">
+                  ${income
+                    .map(
+                      renderFinancialRecord
+                    )
+                    .join("")
+                  }
                 </div>
               `
               : ""
           }
 
 
-          <div
-            style="
-              margin-top:10px;
-              color:var(--muted);
-              font-size:12px;
-              line-height:1.7;
-            "
-          >
+          ${
+            assets.length
+              ? `
+                <div
+                  style="
+                    margin:18px 0 8px;
+                    color:var(--green);
+                    font-weight:900;
+                  "
+                >
+                  ${
+                    currentLanguage === "bn"
+                      ? "সম্পদ"
+                      : "Assets"
+                  }
+                </div>
+
+                <div class="financial-grid">
+                  ${assets
+                    .map(
+                      renderFinancialRecord
+                    )
+                    .join("")
+                  }
+                </div>
+              `
+              : ""
+          }
+
+
+          ${
+            liabilities.length
+              ? `
+                <div
+                  style="
+                    margin:18px 0 8px;
+                    color:var(--green);
+                    font-weight:900;
+                  "
+                >
+                  ${
+                    currentLanguage === "bn"
+                      ? "দায়"
+                      : "Liabilities"
+                  }
+                </div>
+
+                <div class="financial-grid">
+                  ${liabilities
+                    .map(
+                      renderFinancialRecord
+                    )
+                    .join("")
+                  }
+                </div>
+              `
+              : ""
+          }
+
+        </div>
+
+      `;
+
+    }
+
+
+    else if (profile) {
+
+      const verification =
+        verificationInfo(
+          profile.verification_status
+        );
+
+
+      financialHtml = `
+
+        <div class="financial-profile">
+
+          <div class="financial-title">
+            ${
+              currentLanguage === "bn"
+                ? "আর্থিক প্রোফাইল"
+                : "Financial profile"
+            }
+          </div>
+
+
+          <div class="financial-grid">
+
+            <div class="financial-item">
+              <span class="financial-label">
+                ${
+                  currentLanguage === "bn"
+                    ? "আয়"
+                    : "Income"
+                }
+              </span>
+
+              <strong class="financial-value">
+                ${formatMoney(
+                  profile.income
+                )}
+              </strong>
+            </div>
+
+
+            <div class="financial-item">
+              <span class="financial-label">
+                ${
+                  currentLanguage === "bn"
+                    ? "সম্পদের মূল্য"
+                    : "Asset value"
+                }
+              </span>
+
+              <strong class="financial-value">
+                ${formatMoney(
+                  profile.assets_value
+                )}
+              </strong>
+            </div>
+
+
+            <div class="financial-item">
+              <span class="financial-label">
+                ${
+                  currentLanguage === "bn"
+                    ? "দায়"
+                    : "Liabilities"
+                }
+              </span>
+
+              <strong class="financial-value">
+                ${formatMoney(
+                  profile.liabilities_value
+                )}
+              </strong>
+            </div>
+
+          </div>
+
+
+          <div class="financial-meta">
 
             <div>
-
               ${
                 currentLanguage === "bn"
                   ? "রিপোর্টের বছর: "
@@ -2849,27 +1387,14 @@
               }
 
               <strong>
-                ${reportYear}
+                ${formatYear(
+                  profile.report_year
+                )}
               </strong>
-
             </div>
 
 
             <div>
-
-              ${
-                currentLanguage === "bn"
-                  ? "প্রকাশের তারিখ: "
-                  : "Publication date: "
-              }
-
-              ${publicationDate}
-
-            </div>
-
-
-            <div>
-
               ${
                 currentLanguage === "bn"
                   ? "যাচাই: "
@@ -2881,12 +1406,10 @@
               >
                 ${verification.text}
               </span>
-
             </div>
 
 
             <div>
-
               ${
                 currentLanguage === "bn"
                   ? "উৎস: "
@@ -2894,22 +1417,11 @@
               }
 
               <strong>
-                ${source}
+                ${escapeHtml(
+                  profile.source ||
+                  "উল্লেখ নেই"
+                )}
               </strong>
-
-            </div>
-
-
-            <div>
-
-              ${
-                currentLanguage === "bn"
-                  ? "উৎসের লিংক: "
-                  : "Source link: "
-              }
-
-              ${sourceLinkHtml}
-
             </div>
 
           </div>
@@ -2917,782 +1429,1456 @@
         </div>
 
       `;
+
     }
 
 
-    /* =========================================================
-       16. DISPLAY SEARCH RESULTS
-       ========================================================= */
+    else {
 
-    function displaySearchResults(
-      officers
-    ) {
+      financialHtml = `
 
-      const section =
-        document.getElementById(
-          "searchResultsSection"
-        );
+        <div class="no-profile">
 
+          ${
+            currentLanguage === "bn"
+              ? "এই কর্মকর্তার জন্য এখনো আর্থিক তথ্য যুক্ত করা হয়নি।"
+              : "No financial information has been added for this official yet."
+          }
 
-      const container =
-        document.getElementById(
-          "searchResults"
-        );
+        </div>
 
+      `;
 
-      if (!section || !container) {
-
-        return;
-      }
+    }
 
 
-      section.style.display =
-        "block";
+    return `
+
+      <article class="result-card">
+
+        <div class="result-top">
+
+          <div class="result-info">
+
+            <h3>
+              ${name}
+            </h3>
+
+            <p>
+              ${
+                currentLanguage === "bn"
+                  ? "পদ: "
+                  : "Designation: "
+              }
+
+              ${designation}
+            </p>
+
+          </div>
 
 
-      if (!officers.length) {
-
-        container.innerHTML = `
-
-          <div class="no-result">
+          <div class="result-badge">
 
             ${
               currentLanguage === "bn"
-                ? "কোনো কর্মকর্তা পাওয়া যায়নি।"
-                : "No officials were found."
+                ? "প্রকাশযোগ্য তথ্য"
+                : "Publishable information"
             }
 
           </div>
 
-        `;
+        </div>
 
 
-        section.scrollIntoView({
-          behavior: "smooth",
-          block: "start"
-        });
+        ${financialHtml}
+
+      </article>
+
+    `;
+
+  }
 
 
-        return;
-      }
+  /* =========================================================
+     RENDER MINISTRY
+     ========================================================= */
+
+  function renderMinistry(
+    ministry
+  ) {
+
+    return `
+
+      <div class="global-mini-card">
+
+        <h3>
+          ${escapeHtml(
+            ministry.name
+          )}
+        </h3>
+
+        <p>
+          ${
+            currentLanguage === "bn"
+              ? "মন্ত্রণালয়"
+              : "Ministry"
+          }
+        </p>
+
+      </div>
+
+    `;
+
+  }
 
 
-      container.innerHTML =
-        officers
-          .map(
-            function(officer) {
+  /* =========================================================
+     RENDER DEPARTMENT
+     ========================================================= */
 
-              const name =
-                escapeHtml(
-                  officer.name ||
-                  (
+  function renderDepartment(
+    department
+  ) {
+
+    return `
+
+      <div class="global-mini-card">
+
+        <h3>
+          ${escapeHtml(
+            department.name
+          )}
+        </h3>
+
+        <p>
+          ${
+            currentLanguage === "bn"
+              ? "দপ্তর / অধিদপ্তর"
+              : "Department"
+          }
+        </p>
+
+      </div>
+
+    `;
+
+  }
+
+
+  /* =========================================================
+     RENDER FINANCIAL SEARCH RESULT
+     ========================================================= */
+
+  function renderFinancialSearchResult(
+    record,
+    official
+  ) {
+
+    const verification =
+      verificationInfo(
+        record.verification_status
+      );
+
+
+    let typeLabel =
+      currentLanguage === "bn"
+        ? "আয়"
+        : "Income";
+
+
+    if (record.type === "asset") {
+
+      typeLabel =
+        currentLanguage === "bn"
+          ? "সম্পদ"
+          : "Asset";
+
+    }
+
+
+    if (record.type === "liability") {
+
+      typeLabel =
+        currentLanguage === "bn"
+          ? "দায়"
+          : "Liability";
+
+    }
+
+
+    return `
+
+      <div class="global-financial-card">
+
+        <h3>
+          ${
+            escapeHtml(
+              official
+                ? official.name
+                : (
                     currentLanguage === "bn"
-                      ? "নাম নেই"
-                      : "Name unavailable"
+                      ? "কর্মকর্তার নাম পাওয়া যায়নি"
+                      : "Official unavailable"
                   )
-                );
+            )
+          }
+        </h3>
 
 
-              const designation =
-                escapeHtml(
-                  officer.designation ||
-                  (
-                    currentLanguage === "bn"
-                      ? "পদ উল্লেখ নেই"
-                      : "Designation unavailable"
-                  )
-                );
+        ${
+          official
+            ? `
+              <p>
+                ${
+                  currentLanguage === "bn"
+                    ? "পদ: "
+                    : "Designation: "
+                }
+
+                ${escapeHtml(
+                  official.designation ||
+                  ""
+                )}
+              </p>
+            `
+            : ""
+        }
 
 
-              const records =
-                Array.isArray(
-                  officer.financial_records
+        <div
+          style="
+            margin-top:12px;
+            padding:12px;
+            background:var(--bg);
+            border:1px solid var(--border);
+            border-radius:10px;
+          "
+        >
+
+          <strong>
+            ${typeLabel}
+          </strong>
+
+          <div
+            style="
+              font-size:20px;
+              font-weight:900;
+              color:var(--green);
+              margin-top:4px;
+            "
+          >
+            ${formatMoney(
+              record.amount
+            )}
+          </div>
+
+        </div>
+
+
+        <div class="global-financial-meta">
+
+          <div>
+            ${
+              currentLanguage === "bn"
+                ? "রিপোর্টের বছর: "
+                : "Report year: "
+            }
+
+            <strong>
+              ${formatYear(
+                record.report_year
+              )}
+            </strong>
+          </div>
+
+
+          <div>
+            ${
+              currentLanguage === "bn"
+                ? "প্রকাশের তারিখ: "
+                : "Publication date: "
+            }
+
+            ${formatDate(
+              record.publication_date
+            )}
+          </div>
+
+
+          <div>
+            ${
+              currentLanguage === "bn"
+                ? "উৎস: "
+                : "Source: "
+            }
+
+            <strong>
+              ${escapeHtml(
+                record.source ||
+                (
+                  currentLanguage === "bn"
+                    ? "উৎস উল্লেখ নেই"
+                    : "Source unavailable"
                 )
-                  ? officer.financial_records
-                  : [];
-
-
-              const profile =
-                officer.financial_profile;
-
-
-              let financialHtml =
-                "";
-
-
-              /* =================================================
-                 NEW FINANCIAL RECORDS
-                 ================================================= */
-
-              if (
-                records.length
-              ) {
-
-                const incomeRecords =
-                  records.filter(
-                    function(record) {
-
-                      return (
-                        record.type ===
-                        "income"
-                      );
-
-                    }
-                  );
-
-
-                const assetRecords =
-                  records.filter(
-                    function(record) {
-
-                      return (
-                        record.type ===
-                        "asset"
-                      );
-
-                    }
-                  );
-
-
-                const liabilityRecords =
-                  records.filter(
-                    function(record) {
-
-                      return (
-                        record.type ===
-                        "liability"
-                      );
-
-                    }
-                  );
-
-
-                financialHtml = `
-
-                  <div class="financial-profile">
-
-                    <div class="financial-title">
-
-                      ${
-                        currentLanguage === "bn"
-                          ? "আর্থিক তথ্য"
-                          : "Financial information"
-                      }
-
-                    </div>
-
-
-                    ${
-                      incomeRecords.length
-                        ? `
-
-                          <div class="financial-group-title">
-
-                            ${
-                              currentLanguage === "bn"
-                                ? "আয়"
-                                : "Income"
-                            }
-
-                          </div>
-
-
-                          <div class="financial-grid">
-
-                            ${
-                              incomeRecords
-                                .map(
-                                  renderFinancialRecord
-                                )
-                                .join("")
-                            }
-
-                          </div>
-
-                        `
-                        : ""
-                    }
-
-
-                    ${
-                      assetRecords.length
-                        ? `
-
-                          <div class="financial-group-title">
-
-                            ${
-                              currentLanguage === "bn"
-                                ? "সম্পদ"
-                                : "Assets"
-                            }
-
-                          </div>
-
-
-                          <div class="financial-grid">
-
-                            ${
-                              assetRecords
-                                .map(
-                                  renderFinancialRecord
-                                )
-                                .join("")
-                            }
-
-                          </div>
-
-                        `
-                        : ""
-                    }
-
-
-                    ${
-                      liabilityRecords.length
-                        ? `
-
-                          <div class="financial-group-title">
-
-                            ${
-                              currentLanguage === "bn"
-                                ? "দায়"
-                                : "Liabilities"
-                            }
-
-                          </div>
-
-
-                          <div class="financial-grid">
-
-                            ${
-                              liabilityRecords
-                                .map(
-                                  renderFinancialRecord
-                                )
-                                .join("")
-                            }
-
-                          </div>
-
-                        `
-                        : ""
-                    }
-
-                  </div>
-
-                `;
-
-              }
-
-
-              /* =================================================
-                 OLD FINANCIAL PROFILE FALLBACK
-                 ================================================= */
-
-              else if (
-                profile
-              ) {
-
-                const verification =
-                  verificationInfo(
-                    profile.verification_status
-                  );
-
-
-                const source =
-                  escapeHtml(
-                    profile.source ||
-                    (
-                      currentLanguage === "bn"
-                        ? "উৎস উল্লেখ নেই"
-                        : "Source unavailable"
-                    )
-                  );
-
-
-                const sourceUrl =
-                  safeSourceUrl(
-                    profile.source_url
-                  );
-
-
-                const sourceLinkHtml =
-                  sourceUrl
-                    ? `
-                      <a
-                        class="source-link"
-                        href="${escapeHtml(sourceUrl)}"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                      >
-                        ${
-                          currentLanguage === "bn"
-                            ? "উৎসের লিংক খুলুন"
-                            : "Open source link"
-                        }
-                      </a>
-                    `
-                    : (
-                        currentLanguage === "bn"
-                          ? "লিংক নেই"
-                          : "No link"
-                      );
-
-
-                financialHtml = `
-
-                  <div class="financial-profile">
-
-                    <div class="financial-title">
-
-                      ${
-                        currentLanguage === "bn"
-                          ? "আর্থিক প্রোফাইল"
-                          : "Financial profile"
-                      }
-
-                    </div>
-
-
-                    <div class="financial-grid">
-
-
-                      <div class="financial-item">
-
-                        <span class="financial-label">
-
-                          ${
-                            currentLanguage === "bn"
-                              ? "আয়"
-                              : "Income"
-                          }
-
-                        </span>
-
-                        <strong class="financial-value">
-
-                          ${formatMoney(
-                            profile.income
-                          )}
-
-                        </strong>
-
-                      </div>
-
-
-                      <div class="financial-item">
-
-                        <span class="financial-label">
-
-                          ${
-                            currentLanguage === "bn"
-                              ? "সম্পদের মূল্য"
-                              : "Asset value"
-                          }
-
-                        </span>
-
-                        <strong class="financial-value">
-
-                          ${formatMoney(
-                            profile.assets_value
-                          )}
-
-                        </strong>
-
-                      </div>
-
-
-                      <div class="financial-item">
-
-                        <span class="financial-label">
-
-                          ${
-                            currentLanguage === "bn"
-                              ? "দায়"
-                              : "Liabilities"
-                          }
-
-                        </span>
-
-                        <strong class="financial-value">
-
-                          ${formatMoney(
-                            profile.liabilities_value
-                          )}
-
-                        </strong>
-
-                      </div>
-
-
-                      <div class="financial-item">
-
-                        <span class="financial-label">
-
-                          ${
-                            currentLanguage === "bn"
-                              ? "রিপোর্টের বছর"
-                              : "Report year"
-                          }
-
-                        </span>
-
-                        <strong class="financial-value">
-
-                          ${formatYear(
-                            profile.report_year
-                          )}
-
-                        </strong>
-
-                      </div>
-
-
-                    </div>
-
-
-                    <div class="financial-meta">
-
-
-                      <div>
-
-                        ${
-                          currentLanguage === "bn"
-                            ? "যাচাইয়ের অবস্থা:"
-                            : "Verification status:"
-                        }
-
-                        <span
-                          class="${verification.className}"
-                        >
-                          ${verification.text}
-                        </span>
-
-                      </div>
-
-
-                      <div>
-
-                        ${
-                          currentLanguage === "bn"
-                            ? "তথ্যের উৎস:"
-                            : "Information source:"
-                        }
-
-                        <strong>
-                          ${source}
-                        </strong>
-
-                      </div>
-
-
-                      <div>
-
-                        ${
-                          currentLanguage === "bn"
-                            ? "উৎসের লিংক:"
-                            : "Source link:"
-                        }
-
-                        ${sourceLinkHtml}
-
-                      </div>
-
-
-                    </div>
-
-                  </div>
-
-                `;
-              }
-
-
-              /* =================================================
-                 NO FINANCIAL DATA
-                 ================================================= */
-
-              else {
-
-                financialHtml = `
-
-                  <div class="no-profile">
-
-                    ${
-                      currentLanguage === "bn"
-                        ? "এই কর্মকর্তার জন্য এখনো আর্থিক তথ্য যুক্ত করা হয়নি।"
-                        : "No financial information has been added for this official yet."
-                    }
-
-                  </div>
-
-                `;
-              }
-
-
-              return `
-
-                <article class="result-card">
-
-
-                  <div class="result-top">
-
-
-                    <div class="result-info">
-
-                      <h3>
-                        ${name}
-                      </h3>
-
-
-                      <p>
-
-                        ${
-                          currentLanguage === "bn"
-                            ? "পদ: "
-                            : "Designation: "
-                        }
-
-                        ${designation}
-
-                      </p>
-
-                    </div>
-
-
-                    <div class="result-badge">
-
-                      ${
-                        currentLanguage === "bn"
-                          ? "প্রকাশযোগ্য তথ্য"
-                          : "Publicly publishable information"
-                      }
-
-                    </div>
-
-
-                  </div>
-
-
-                  ${financialHtml}
-
-
-                </article>
-
-              `;
-
+              )}
+            </strong>
+          </div>
+
+
+          <div>
+            ${
+              currentLanguage === "bn"
+                ? "যাচাই: "
+                : "Verification: "
             }
-          )
-          .join("");
+
+            <span
+              class="${verification.className}"
+            >
+              ${verification.text}
+            </span>
+          </div>
+
+        </div>
+
+      </div>
+
+    `;
+
+  }
 
 
-      section.scrollIntoView({
-        behavior: "smooth",
-        block: "start"
-      });
+  /* =========================================================
+     DISPLAY GLOBAL RESULTS
+     ========================================================= */
+
+  function displayGlobalResults(
+    data
+  ) {
+
+    const section =
+      document.getElementById(
+        "searchResultsSection"
+      );
+
+    const container =
+      document.getElementById(
+        "searchResults"
+      );
+
+
+    if (!section || !container) {
+      return;
     }
 
 
-    /* =========================================================
-       17. INITIALIZE SUPABASE
-       ========================================================= */
-
-    function initializeSupabase() {
-
-      if (
-        !SUPABASE_URL ||
-        !SUPABASE_PUBLISHABLE_KEY ||
-        SUPABASE_PUBLISHABLE_KEY ===
-          "PASTE_YOUR_SUPABASE_PUBLISHABLE_KEY_HERE"
-      ) {
-
-        console.warn(
-          "Supabase Publishable Key has not been added yet."
-        );
+    section.style.display =
+      "block";
 
 
-        showConnectionStatus(
-          currentLanguage === "bn"
-            ? "Supabase Publishable Key এখনো বসানো হয়নি।"
-            : "Supabase Publishable Key has not been added yet.",
-          "error"
-        );
+    let html = "";
 
 
-        return;
-      }
+    /* MINISTRY */
 
+    if (
+      data.ministries &&
+      data.ministries.length
+    ) {
 
-      if (
-        !window.supabase ||
-        typeof window.supabase.createClient !==
-          "function"
-      ) {
+      html += `
 
-        console.error(
-          "Supabase library was not loaded."
-        );
+        <div class="global-result-heading">
 
+          ${
+            currentLanguage === "bn"
+              ? "মন্ত্রণালয়"
+              : "Ministries"
+          }
 
-        showConnectionStatus(
-          currentLanguage === "bn"
-            ? "Supabase library লোড হয়নি।"
-            : "Supabase library could not be loaded.",
-          "error"
-        );
+        </div>
 
+        <div class="results-box">
 
-        return;
-      }
+          ${data.ministries
+            .map(
+              renderMinistry
+            )
+            .join("")
+          }
 
+        </div>
 
-      try {
+      `;
 
-        db =
-          window.supabase.createClient(
-            SUPABASE_URL,
-            SUPABASE_PUBLISHABLE_KEY
-          );
-
-
-        showConnectionStatus(
-          currentLanguage === "bn"
-            ? "Supabase সংযুক্ত হয়েছে।"
-            : "Supabase connected.",
-          "success"
-        );
-
-
-        loadStatistics();
-
-
-      } catch (error) {
-
-        console.error(
-          "Supabase initialization error:",
-          error
-        );
-
-
-        db = null;
-
-
-        showConnectionStatus(
-          currentLanguage === "bn"
-            ? "Supabase সংযোগ তৈরি করা যায়নি।"
-            : "Could not initialize Supabase.",
-          "error"
-        );
-      }
     }
 
 
-    /* =========================================================
-       18. EVENTS
-       ========================================================= */
+    /* DEPARTMENT */
 
-    document.addEventListener(
-      "DOMContentLoaded",
-      function() {
+    if (
+      data.departments &&
+      data.departments.length
+    ) {
+
+      html += `
+
+        <div class="global-result-heading">
+
+          ${
+            currentLanguage === "bn"
+              ? "দপ্তর / অধিদপ্তর"
+              : "Departments"
+          }
+
+        </div>
+
+        <div class="results-box">
+
+          ${data.departments
+            .map(
+              renderDepartment
+            )
+            .join("")
+          }
+
+        </div>
+
+      `;
+
+    }
 
 
-        /* Current year */
+    /* OFFICIAL */
 
-        const currentYear =
-          document.getElementById(
-            "currentYear"
+    if (
+      data.officials &&
+      data.officials.length
+    ) {
+
+      html += `
+
+        <div class="global-result-heading">
+
+          ${
+            currentLanguage === "bn"
+              ? "কর্মকর্তা"
+              : "Officials"
+          }
+
+        </div>
+
+        <div class="results-box">
+
+          ${data.officials
+            .map(
+              renderOfficial
+            )
+            .join("")
+          }
+
+        </div>
+
+      `;
+
+    }
+
+
+    /* FINANCIAL */
+
+    if (
+      data.financial &&
+      data.financial.length
+    ) {
+
+      html += `
+
+        <div class="global-result-heading">
+
+          ${
+            currentLanguage === "bn"
+              ? "আর্থিক তথ্য / উৎস"
+              : "Financial information / sources"
+          }
+
+        </div>
+
+        <div class="results-box">
+
+          ${data.financial
+            .map(function(item) {
+
+              return renderFinancialSearchResult(
+                item.record,
+                item.official
+              );
+
+            })
+            .join("")
+          }
+
+        </div>
+
+      `;
+
+    }
+
+
+    if (!html) {
+
+      html = `
+
+        <div class="no-result">
+
+          ${
+            currentLanguage === "bn"
+              ? "কোনো ফলাফল পাওয়া যায়নি। অন্য শব্দ বা অন্য Filter দিয়ে চেষ্টা করুন।"
+              : "No results found. Try another search term or filter."
+          }
+
+        </div>
+
+      `;
+
+    }
+
+
+    container.innerHTML =
+      html;
+
+
+    section.scrollIntoView({
+      behavior:"smooth",
+      block:"start"
+    });
+
+  }
+
+
+  /* =========================================================
+     GLOBAL SEARCH
+     ========================================================= */
+
+  async function searchOfficer() {
+
+    if (!db) {
+
+      showConnectionStatus(
+        currentLanguage === "bn"
+          ? "Supabase এখনো সংযুক্ত নয়।"
+          : "Supabase is not connected.",
+        "error"
+      );
+
+      return;
+    }
+
+
+    const input =
+      document.getElementById(
+        "searchInput"
+      );
+
+    const button =
+      document.getElementById(
+        "searchButton"
+      );
+
+
+    if (!input || !button) {
+      return;
+    }
+
+
+    const value =
+      input.value.trim();
+
+
+    if (!value) {
+
+      showConnectionStatus(
+        currentLanguage === "bn"
+          ? "অনুসন্ধানের জন্য কিছু লিখুন।"
+          : "Please enter something to search.",
+        "error"
+      );
+
+      input.focus();
+
+      return;
+    }
+
+
+    const searchValue =
+      value
+        .replace(/[%_]/g, "")
+        .trim()
+        .slice(0, 100);
+
+
+    if (!searchValue) {
+      return;
+    }
+
+
+    button.disabled =
+      true;
+
+
+    button.textContent =
+      currentLanguage === "bn"
+        ? "খোঁজা হচ্ছে..."
+        : "Searching...";
+
+
+    showConnectionStatus("");
+
+
+    const data = {
+
+      ministries:[],
+      departments:[],
+      officials:[],
+      financial:[]
+
+    };
+
+
+    try {
+
+      const filter =
+        currentSearchFilter;
+
+
+      /* =====================================================
+         1. MINISTRIES
+         ===================================================== */
+
+      if (
+        filter === "all" ||
+        filter === "ministry"
+      ) {
+
+        const result =
+          await db
+            .from("ministries")
+            .select("id,name")
+            .ilike(
+              "name",
+              "%" + searchValue + "%"
+            )
+            .limit(25);
+
+
+        if (result.error) {
+          console.error(
+            "Ministry search:",
+            result.error
+          );
+        } else {
+          data.ministries =
+            result.data || [];
+        }
+
+      }
+
+
+      /* =====================================================
+         2. DEPARTMENTS
+         ===================================================== */
+
+      if (
+        filter === "all" ||
+        filter === "department"
+      ) {
+
+        const result =
+          await db
+            .from("departments")
+            .select(
+              "id,name"
+            )
+            .ilike(
+              "name",
+              "%" + searchValue + "%"
+            )
+            .limit(25);
+
+
+        if (result.error) {
+          console.error(
+            "Department search:",
+            result.error
+          );
+        } else {
+          data.departments =
+            result.data || [];
+        }
+
+      }
+
+
+      /* =====================================================
+         3. OFFICIALS
+         ===================================================== */
+
+      if (
+        filter === "all" ||
+        filter === "official"
+      ) {
+
+        const nameResult =
+          await db
+            .from("officials")
+            .select(
+              "id,name,designation,department_id"
+            )
+            .ilike(
+              "name",
+              "%" + searchValue + "%"
+            )
+            .limit(25);
+
+
+        const designationResult =
+          await db
+            .from("officials")
+            .select(
+              "id,name,designation,department_id"
+            )
+            .ilike(
+              "designation",
+              "%" + searchValue + "%"
+            )
+            .limit(25);
+
+
+        const combined = [
+          ...(nameResult.data || []),
+          ...(designationResult.data || [])
+        ];
+
+
+        const unique =
+          new Map();
+
+
+        combined.forEach(
+          function(officer) {
+            unique.set(
+              officer.id,
+              officer
+            );
+          }
+        );
+
+
+        const officers =
+          Array.from(
+            unique.values()
+          ).slice(0,25);
+
+
+        const detailed =
+          await Promise.all(
+            officers.map(
+              loadOfficialFinancialData
+            )
           );
 
 
-        if (currentYear) {
+        data.officials =
+          detailed;
 
-          currentYear.textContent =
-            new Date().getFullYear();
+      }
+
+
+      /* =====================================================
+         4. FINANCIAL + SOURCE
+         ===================================================== */
+
+      if (
+        filter === "all" ||
+        filter === "financial" ||
+        filter === "source"
+      ) {
+
+        let records = [];
+
+
+        const year =
+          /^\d{4}$/.test(searchValue)
+            ? Number(searchValue)
+            : null;
+
+
+        const financialType =
+          getFinancialType(
+            searchValue
+          );
+
+
+        /* YEAR */
+
+        if (year) {
+
+          const result =
+            await db
+              .from("financial_records")
+              .select(
+                "id,official_id,profile_id,type,amount,asset_type,source,source_url,publication_date,report_year,verification_status"
+              )
+              .eq(
+                "report_year",
+                year
+              )
+              .order(
+                "created_at",
+                {
+                  ascending:false
+                }
+              )
+              .limit(25);
+
+
+          if (!result.error) {
+            records =
+              result.data || [];
+          }
+
         }
 
 
-        /* Search button */
+        /* TYPE */
 
-        const searchButton =
-          document.getElementById(
-            "searchButton"
-          );
+        else if (financialType) {
+
+          const result =
+            await db
+              .from("financial_records")
+              .select(
+                "id,official_id,profile_id,type,amount,asset_type,source,source_url,publication_date,report_year,verification_status"
+              )
+              .eq(
+                "type",
+                financialType
+              )
+              .limit(25);
 
 
-        const searchInput =
-          document.getElementById(
-            "searchInput"
-          );
+          if (!result.error) {
+            records =
+              result.data || [];
+          }
 
-
-        if (searchButton) {
-
-          searchButton.addEventListener(
-            "click",
-            searchOfficer
-          );
         }
 
 
-        if (searchInput) {
+        /* SOURCE / ASSET TYPE */
 
-          searchInput.addEventListener(
-            "keydown",
-            function(event) {
+        else {
 
-              if (
-                event.key === "Enter"
-              ) {
+          const sourceResult =
+            await db
+              .from("financial_records")
+              .select(
+                "id,official_id,profile_id,type,amount,asset_type,source,source_url,publication_date,report_year,verification_status"
+              )
+              .ilike(
+                "source",
+                "%" + searchValue + "%"
+              )
+              .limit(25);
 
-                event.preventDefault();
 
-                searchOfficer();
-              }
+          const assetResult =
+            await db
+              .from("financial_records")
+              .select(
+                "id,official_id,profile_id,type,amount,asset_type,source,source_url,publication_date,report_year,verification_status"
+              )
+              .ilike(
+                "asset_type",
+                "%" + searchValue + "%"
+              )
+              .limit(25);
 
-            }
-          );
+
+          records = [
+            ...(sourceResult.data || []),
+            ...(assetResult.data || [])
+          ];
+
         }
 
 
-        /* Language button */
+        /* UNIQUE RECORDS */
 
-        const languageButton =
-          document.getElementById(
-            "languageButton"
-          );
+        const uniqueRecords =
+          new Map();
 
 
-        if (languageButton) {
+        records.forEach(
+          function(record) {
 
-          languageButton.addEventListener(
-            "click",
-            function() {
+            uniqueRecords.set(
+              record.id,
+              record
+            );
 
-              setLanguage(
-                currentLanguage === "bn"
-                  ? "en"
-                  : "bn"
+          }
+        );
+
+
+        records =
+          Array.from(
+            uniqueRecords.values()
+          ).slice(0,25);
+
+
+        /* OFFICIAL NAMES */
+
+        if (records.length) {
+
+          const officialIds =
+            [
+              ...new Set(
+                records
+                  .map(
+                    r => r.official_id
+                  )
+                  .filter(Boolean)
+              )
+            ];
+
+
+          let officials = [];
+
+
+          if (officialIds.length) {
+
+            const officialResult =
+              await db
+                .from("officials")
+                .select(
+                  "id,name,designation"
+                )
+                .in(
+                  "id",
+                  officialIds
+                );
+
+
+            officials =
+              officialResult.data || [];
+
+          }
+
+
+          const officialMap =
+            new Map();
+
+
+          officials.forEach(
+            function(official) {
+
+              officialMap.set(
+                official.id,
+                official
               );
 
             }
           );
+
+
+          data.financial =
+            records.map(
+              function(record) {
+
+                return {
+
+                  record:record,
+
+                  official:
+                    officialMap.get(
+                      record.official_id
+                    ) || null
+
+                };
+
+              }
+            );
+
         }
 
+      }
 
-        /* Initial language */
 
-        setLanguage(
-          currentLanguage
+      displayGlobalResults(
+        data
+      );
+
+
+    } catch (error) {
+
+      console.error(
+        "Global search error:",
+        error
+      );
+
+
+      showConnectionStatus(
+        currentLanguage === "bn"
+          ? "অনুসন্ধানের সময় সমস্যা হয়েছে।"
+          : "An error occurred during search.",
+        "error"
+      );
+
+
+      displayGlobalResults({
+        ministries:[],
+        departments:[],
+        officials:[],
+        financial:[]
+      });
+
+
+    } finally {
+
+      button.disabled =
+        false;
+
+
+      button.textContent =
+        currentLanguage === "bn"
+          ? "খুঁজুন"
+          : "Search";
+
+    }
+
+  }
+
+
+  /* =========================================================
+     AGRICULTURE
+     ========================================================= */
+
+  function showAgriculture() {
+
+    const ministries =
+      document.getElementById(
+        "ministries"
+      );
+
+    const results =
+      document.getElementById(
+        "searchResultsSection"
+      );
+
+    const agriculture =
+      document.getElementById(
+        "agricultureDetails"
+      );
+
+    const land =
+      document.getElementById(
+        "landDetails"
+      );
+
+
+    if (ministries) {
+      ministries.style.display =
+        "none";
+    }
+
+    if (results) {
+      results.style.display =
+        "none";
+    }
+
+    if (land) {
+      land.style.display =
+        "none";
+    }
+
+    if (agriculture) {
+
+      agriculture.style.display =
+        "block";
+
+      agriculture.scrollIntoView({
+        behavior:"smooth",
+        block:"start"
+      });
+
+    }
+
+  }
+
+
+  function closeAgriculture() {
+
+    const ministries =
+      document.getElementById(
+        "ministries"
+      );
+
+    const agriculture =
+      document.getElementById(
+        "agricultureDetails"
+      );
+
+    const officials =
+      document.getElementById(
+        "agricultureOfficials"
+      );
+
+
+    if (agriculture) {
+      agriculture.style.display =
+        "none";
+    }
+
+    if (officials) {
+      officials.style.display =
+        "none";
+    }
+
+    if (ministries) {
+
+      ministries.style.display =
+        "block";
+
+      ministries.scrollIntoView({
+        behavior:"smooth",
+        block:"start"
+      });
+
+    }
+
+  }
+
+
+  function showAgricultureOfficials() {
+
+    const element =
+      document.getElementById(
+        "agricultureOfficials"
+      );
+
+    if (element) {
+
+      element.style.display =
+        "block";
+
+      element.scrollIntoView({
+        behavior:"smooth",
+        block:"start"
+      });
+
+    }
+
+  }
+
+
+  /* =========================================================
+     LAND
+     ========================================================= */
+
+  function showLand() {
+
+    const ministries =
+      document.getElementById(
+        "ministries"
+      );
+
+    const results =
+      document.getElementById(
+        "searchResultsSection"
+      );
+
+    const agriculture =
+      document.getElementById(
+        "agricultureDetails"
+      );
+
+    const land =
+      document.getElementById(
+        "landDetails"
+      );
+
+
+    if (ministries) {
+      ministries.style.display =
+        "none";
+    }
+
+    if (results) {
+      results.style.display =
+        "none";
+    }
+
+    if (agriculture) {
+      agriculture.style.display =
+        "none";
+    }
+
+    if (land) {
+
+      land.style.display =
+        "block";
+
+      land.scrollIntoView({
+        behavior:"smooth",
+        block:"start"
+      });
+
+    }
+
+  }
+
+
+  function closeLand() {
+
+    const ministries =
+      document.getElementById(
+        "ministries"
+      );
+
+    const land =
+      document.getElementById(
+        "landDetails"
+      );
+
+    const officials =
+      document.getElementById(
+        "landOfficials"
+      );
+
+
+    if (land) {
+      land.style.display =
+        "none";
+    }
+
+    if (officials) {
+      officials.style.display =
+        "none";
+    }
+
+    if (ministries) {
+
+      ministries.style.display =
+        "block";
+
+      ministries.scrollIntoView({
+        behavior:"smooth",
+        block:"start"
+      });
+
+    }
+
+  }
+
+
+  function showLandOfficials() {
+
+    const element =
+      document.getElementById(
+        "landOfficials"
+      );
+
+    if (element) {
+
+      element.style.display =
+        "block";
+
+      element.scrollIntoView({
+        behavior:"smooth",
+        block:"start"
+      });
+
+    }
+
+  }
+
+
+  /* =========================================================
+     SUPABASE INITIALIZE
+     ========================================================= */
+
+  function initializeSupabase() {
+
+    if (
+      !window.supabase ||
+      typeof window.supabase.createClient !==
+        "function"
+    ) {
+
+      showConnectionStatus(
+        currentLanguage === "bn"
+          ? "Supabase library লোড হয়নি।"
+          : "Supabase library could not be loaded.",
+        "error"
+      );
+
+      return;
+
+    }
+
+
+    try {
+
+      db =
+        window.supabase.createClient(
+          SUPABASE_URL,
+          SUPABASE_PUBLISHABLE_KEY
         );
 
 
-        /* Supabase */
+      showConnectionStatus(
+        currentLanguage === "bn"
+          ? "Supabase সংযুক্ত হয়েছে।"
+          : "Supabase connected.",
+        "success"
+      );
 
-        initializeSupabase();
+
+      loadStatistics();
+
+    } catch (error) {
+
+      console.error(
+        "Supabase initialization:",
+        error
+      );
+
+      db = null;
+
+      showConnectionStatus(
+        currentLanguage === "bn"
+          ? "Supabase সংযোগ তৈরি করা যায়নি।"
+          : "Could not connect to Supabase.",
+        "error"
+      );
+
+    }
+
+  }
+
+
+  /* =========================================================
+     EVENTS
+     ========================================================= */
+
+  document.addEventListener(
+    "DOMContentLoaded",
+    function() {
+
+
+      /* CURRENT YEAR */
+
+      const currentYear =
+        document.getElementById(
+          "currentYear"
+        );
+
+      if (currentYear) {
+
+        currentYear.textContent =
+          new Date().getFullYear();
 
       }
-    );
 
-  </script>
 
-</body>
-</html>
+      /* GLOBAL SEARCH UI */
+
+      setupGlobalSearchUI();
+
+
+      /* SEARCH BUTTON */
+
+      const searchButton =
+        document.getElementById(
+          "searchButton"
+        );
+
+      const searchInput =
+        document.getElementById(
+          "searchInput"
+        );
+
+
+      if (searchButton) {
+
+        searchButton.addEventListener(
+          "click",
+          searchOfficer
+        );
+
+      }
+
+
+      if (searchInput) {
+
+        searchInput.addEventListener(
+          "keydown",
+          function(event) {
+
+            if (
+              event.key === "Enter"
+            ) {
+
+              event.preventDefault();
+
+              searchOfficer();
+
+            }
+
+          }
+        );
+
+      }
+
+
+      /* LANGUAGE */
+
+      const languageButton =
+        document.getElementById(
+          "languageButton"
+        );
+
+
+      if (languageButton) {
+
+        languageButton.addEventListener(
+          "click",
+          function() {
+
+            setLanguage(
+              currentLanguage === "bn"
+                ? "en"
+                : "bn"
+            );
+
+          }
+        );
+
+      }
+
+
+      /* INITIAL LANGUAGE */
+
+      setLanguage(
+        currentLanguage
+      );
+
+
+      /* SUPABASE */
+
+      initializeSupabase();
+
+    }
+  );
+
+</script>
