@@ -1759,42 +1759,65 @@ async function searchOfficer() {
           profileResult.error
         );
 
-        officer.financial_profile = null;
+              officer.financial_profile = null;
 
-      } else {
+    } else {
 
-        officer.financial_profile =
-          profileResult.data || null;
-      }
+      officer.financial_profile =
+        profileResult.data || null;
     }
 
-    displaySearchResults(officers);
+    const recordsResult = await db
+      .from("financial_records")
+      .select(
+        "id, official_id, profile_id, type, amount, asset_type, source, source_url, publication_date, report_year, verification_status"
+      )
+      .eq("official_id", officer.id)
+      .order("report_year", { ascending: false });
 
-  } catch (error) {
+    if (recordsResult.error) {
 
-    console.error(
-      "Unexpected search error:",
-      error
-    );
+      console.error(
+        "Financial records error for official:",
+        officer.id,
+        recordsResult.error
+      );
 
-    showConnectionStatus(
-      currentLanguage === "bn"
-        ? "অনুসন্ধানের সময় সমস্যা হয়েছে।"
-        : "An error occurred during the search.",
-      "error"
-    );
+      officer.financial_records = [];
 
-  } finally {
+    } else {
 
-    button.disabled = false;
-
-    button.textContent =
-      currentLanguage === "bn"
-        ? "খুঁজুন"
-        : "Search";
+      officer.financial_records =
+        recordsResult.data || [];
+    }
   }
-}
 
+  displaySearchResults(officers);
+
+} catch (error) {
+
+  console.error(
+    "Unexpected search error:",
+    error
+  );
+
+  showConnectionStatus(
+    currentLanguage === "bn"
+      ? "অনুসন্ধানের সময় সমস্যা হয়েছে।"
+      : "An error occurred during the search.",
+    "error"
+  );
+
+} finally {
+
+  button.disabled = false;
+
+  button.textContent =
+    currentLanguage === "bn"
+      ? "খুঁজুন"
+      : "Search";
+}
+}
     /* =========================================================
        12. DISPLAY SEARCH RESULTS
        ========================================================= */
