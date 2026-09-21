@@ -814,7 +814,7 @@
 
   <div
     class="ministry-card"
-    onclick="document.getElementById('searchInput').value='কৃষি সম্প্রসারণ কর্মকর্তা'; document.getElementById('searchButton').click();"
+    onclick="showAgriculture()"
     style="cursor:pointer;"
   >
     <h3
@@ -916,7 +916,108 @@
 
       </div>
 
-    </section>
+    </section><!-- Agriculture Details -->
+
+<section
+  id="agricultureDetails"
+  style="display:none;"
+>
+
+  <div class="container">
+
+    <button
+      type="button"
+      onclick="closeAgriculture()"
+      style="margin-bottom:20px; cursor:pointer;"
+    >
+      ← ফিরে যান
+    </button>
+
+    <h2
+      class="section-title"
+      data-bn="কৃষি মন্ত্রণালয়"
+      data-en="Ministry of Agriculture"
+    >
+      কৃষি মন্ত্রণালয়
+    </h2>
+
+    <p
+      class="section-description"
+      data-bn="কৃষি মন্ত্রণালয়ের অধীন দপ্তর ও প্রকাশযোগ্য কর্মকর্তার তথ্য।"
+      data-en="Departments and publishable official information under the Ministry of Agriculture."
+    >
+      কৃষি মন্ত্রণালয়ের অধীন দপ্তর ও প্রকাশযোগ্য কর্মকর্তার তথ্য।
+    </p>
+
+    <div class="results-box">
+
+      <div class="ministry-card">
+
+        <h3
+          data-bn="কৃষি সম্প্রসারণ অধিদপ্তর"
+          data-en="Department of Agricultural Extension"
+        >
+          কৃষি সম্প্রসারণ অধিদপ্তর
+        </h3>
+
+        <p
+          data-bn="কৃষি সম্প্রসারণ কর্মকর্তা ও সংশ্লিষ্ট প্রকাশযোগ্য তথ্য"
+          data-en="Agricultural extension officers and related publishable information"
+        >
+          কৃষি সম্প্রসারণ কর্মকর্তা ও সংশ্লিষ্ট প্রকাশযোগ্য তথ্য
+        </p>
+
+        <button
+          type="button"
+          onclick="showAgricultureOfficials()"
+          style="margin-top:15px; cursor:pointer;"
+        >
+          কর্মকর্তা দেখুন
+        </button>
+
+      </div>
+
+    </div>
+
+    <div
+      id="agricultureOfficials"
+      style="display:none; margin-top:25px;"
+    >
+
+      <div class="results-box">
+
+        <h3
+          data-bn="কৃষি সম্প্রসারণ অধিদপ্তরের কর্মকর্তা"
+          data-en="Officials of Department of Agricultural Extension"
+        >
+          কৃষি সম্প্রসারণ অধিদপ্তরের কর্মকর্তা
+        </h3>
+
+        <p>
+          <strong>আব্দুল করিম অপু</strong>
+        </p>
+
+        <p>
+          পদ: কৃষি সম্প্রসারণ কর্মকর্তা
+        </p>
+
+        <button
+          type="button"
+          onclick="document.getElementById('searchInput').value='আব্দুল করিম অপু'; document.getElementById('searchButton').click();"
+          style="cursor:pointer;"
+        >
+          আর্থিক তথ্য দেখুন
+        </button>
+
+      </div>
+
+    </div>
+
+  </div>
+
+</section>
+
+<!-- Transparency -->
 
     <!-- Transparency -->
 
@@ -1468,7 +1569,101 @@
        11. OFFICIAL SEARCH
        ========================================================= */
 
-    async function searchOfficer() {
+function showAgriculture() {
+
+  const ministries =
+    document.getElementById("ministries");
+
+  const searchResultsSection =
+    document.getElementById("searchResultsSection");
+
+  const agricultureDetails =
+    document.getElementById("agricultureDetails");
+
+  const agricultureOfficials =
+    document.getElementById("agricultureOfficials");
+
+
+  if (ministries) {
+    ministries.style.display = "none";
+  }
+
+  if (searchResultsSection) {
+    searchResultsSection.style.display = "none";
+  }
+
+  if (agricultureOfficials) {
+    agricultureOfficials.style.display = "none";
+  }
+
+  if (agricultureDetails) {
+
+    agricultureDetails.style.display = "block";
+
+    agricultureDetails.scrollIntoView({
+      behavior: "smooth",
+      block: "start"
+    });
+
+  }
+
+}
+
+
+function closeAgriculture() {
+
+  const ministries =
+    document.getElementById("ministries");
+
+  const agricultureDetails =
+    document.getElementById("agricultureDetails");
+
+  const agricultureOfficials =
+    document.getElementById("agricultureOfficials");
+
+
+  if (agricultureDetails) {
+    agricultureDetails.style.display = "none";
+  }
+
+  if (agricultureOfficials) {
+    agricultureOfficials.style.display = "none";
+  }
+
+  if (ministries) {
+
+    ministries.style.display = "block";
+
+    ministries.scrollIntoView({
+      behavior: "smooth",
+      block: "start"
+    });
+
+  }
+
+}
+
+
+function showAgricultureOfficials() {
+
+  const agricultureOfficials =
+    document.getElementById("agricultureOfficials");
+
+  if (agricultureOfficials) {
+
+    agricultureOfficials.style.display = "block";
+
+    agricultureOfficials.scrollIntoView({
+      behavior: "smooth",
+      block: "start"
+    });
+
+  }
+
+}
+
+
+async function searchOfficer() {
 
   if (!db) {
     showConnectionStatus(
@@ -1485,6 +1680,7 @@
   const value = input.value.trim();
 
   if (!value) {
+
     showConnectionStatus(
       currentLanguage === "bn"
         ? "অনুগ্রহ করে কর্মকর্তার নাম বা পদ লিখুন।"
