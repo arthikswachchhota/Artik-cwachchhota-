@@ -3,6 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
   <title>কৃষি মন্ত্রণালয় — আর্থিক স্বচ্ছতা</title>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -148,15 +149,20 @@
 
   <main class="container">
 
-    <a class="back" href="../index.html">← মূল পেজে ফিরে যান</a>
+    <a class="back" href="../index.html">
+      ← মূল পেজে ফিরে যান
+    </a>
 
     <section class="search-box">
+
       <h2>🔎 কৃষি মন্ত্রণালয়ের তথ্য খুঁজুন</h2>
+
       <p>
         দপ্তর, অধিদপ্তর, কর্মকর্তার নাম বা পদবী দিয়ে অনুসন্ধান করুন।
       </p>
 
       <div class="search-row">
+
         <input
           id="agricultureSearch"
           type="search"
@@ -166,16 +172,21 @@
         <button onclick="searchAgriculture()">
           খুঁজুন
         </button>
+
       </div>
+
     </section>
 
     <section id="results">
+
       <div class="empty">
         অনুসন্ধানের জন্য উপরের ঘরে লিখুন।
       </div>
+
     </section>
 
     <section class="search-box">
+
       <h2>📌 তথ্যের কাঠামো</h2>
 
       <div class="tag">মন্ত্রণালয়</div>
@@ -187,32 +198,44 @@
       <div class="tag">দায়</div>
       <div class="tag">উৎস</div>
       <div class="tag">যাচাই</div>
+
     </section>
 
   </main>
 
   <footer>
+
     <p>
       আর্থিক স্বচ্ছতা — জনগণের অর্থ, জনগণের জানার অধিকার।
     </p>
+
     <p>
       ব্যক্তিগত ব্যাংক তথ্য, OTP, PIN, password বা গোপন credentials প্রকাশ করা হবে না।
     </p>
+
   </footer>
 
   <script>
-    async function searchAgriculture() {
-      const input = document.getElementById("agricultureSearch");
-      const results = document.getElementById("results");
 
-      const keyword = input.value.trim();
+    async function searchAgriculture() {
+
+      const input =
+        document.getElementById("agricultureSearch");
+
+      const results =
+        document.getElementById("results");
+
+      const keyword =
+        input.value.trim();
 
       if (!keyword) {
+
         results.innerHTML = `
           <div class="empty">
             দয়া করে কিছু লিখে অনুসন্ধান করুন।
           </div>
         `;
+
         return;
       }
 
@@ -223,63 +246,93 @@
       `;
 
       try {
-        const { data, error } = await supabaseClient
-          .from("officials")
-          .select("*")
-          .or(`name.ilike.%${keyword}%,designation.ilike.%${keyword}%`)
-          .limit(20);
+
+        const { data, error } =
+          await supabaseClient
+            .from("officials")
+            .select("*")
+            .or(
+              `name.ilike.%${keyword}%,designation.ilike.%${keyword}%`
+            )
+            .limit(20);
 
         if (error) {
           throw error;
         }
 
         if (!data || data.length === 0) {
+
           results.innerHTML = `
             <div class="empty">
               এই নামে কোনো কর্মকর্তা পাওয়া যায়নি।
             </div>
           `;
+
           return;
         }
 
         results.innerHTML = data.map(official => `
+
           <div class="result">
-            <h3>${escapeHtml(official.name || "নাম নেই")}</h3>
+
+            <h3>
+              ${escapeHtml(official.name || "নাম নেই")}
+            </h3>
+
             <p>
               <strong>পদবী:</strong>
-              ${escapeHtml(official.designation || "তথ্য নেই")}
+              ${escapeHtml(
+                official.designation || "তথ্য নেই"
+              )}
             </p>
-            <span class="tag">কৃষি মন্ত্রণালয়</span>
+
+            <span class="tag">
+              কৃষি মন্ত্রণালয়
+            </span>
+
           </div>
+
         `).join("");
 
       } catch (error) {
+
         console.error(error);
 
         results.innerHTML = `
           <div class="empty">
-            তথ্য আনার সময় সমস্যা হয়েছে। পরে আবার চেষ্টা করুন।
+            তথ্য আনার সময় সমস্যা হয়েছে।
+            পরে আবার চেষ্টা করুন।
           </div>
         `;
+
       }
+
     }
 
     function escapeHtml(value) {
+
       return String(value)
         .replace(/&/g, "&amp;")
         .replace(/</g, "&lt;")
         .replace(/>/g, "&gt;")
         .replace(/"/g, "&quot;")
         .replace(/'/g, "&#039;");
+
     }
 
     document
       .getElementById("agricultureSearch")
-      .addEventListener("keydown", function(event) {
-        if (event.key === "Enter") {
-          searchAgriculture();
+      .addEventListener(
+        "keydown",
+        function(event) {
+
+          if (event.key === "Enter") {
+            searchAgriculture();
+          }
+
         }
-      });
+      );
+
   </script>
 
 </body>
