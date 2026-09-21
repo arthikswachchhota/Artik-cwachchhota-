@@ -262,12 +262,20 @@ const departmentIds = departments.map(d => d.id);
 const { data, error } =
   await supabaseClient
     .from("officials")
-    .select("*")
+    .select(`
+      *,
+      departments (
+        name,
+        district,
+        upazila
+      )
+    `)
     .in("department_id", departmentIds)
     .or(
       `name.ilike.%${keyword}%,designation.ilike.%${keyword}%`
     )
     .limit(20);
+
 if (error) {
   throw error;
 }
@@ -291,15 +299,36 @@ if (error) {
             </h3>
 
             <p>
-              <strong>পদবী:</strong>
-              ${escapeHtml(
-                official.designation || "তথ্য নেই"
-              )}
-            </p>
+  <strong>পদবী:</strong>
+  ${escapeHtml(
+    official.designation || "তথ্য নেই"
+  )}
+</p>
 
-            <span class="tag">
-              কৃষি মন্ত্রণালয়
-            </span>
+<p>
+  <strong>দপ্তর:</strong>
+  ${escapeHtml(
+    official.departments?.name || "তথ্য নেই"
+  )}
+</p>
+
+<p>
+  <strong>জেলা:</strong>
+  ${escapeHtml(
+    official.departments?.district || "তথ্য নেই"
+  )}
+</p>
+
+<p>
+  <strong>উপজেলা:</strong>
+  ${escapeHtml(
+    official.departments?.upazila || "তথ্য নেই"
+  )}
+</p>
+
+<span class="tag">
+  কৃষি মন্ত্রণালয়
+</span>
 
           </div>
 
