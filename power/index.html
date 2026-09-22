@@ -20,142 +20,513 @@
       box-sizing: border-box;
     }
 
+    html {
+      scroll-behavior: smooth;
+    }
+
     body {
       margin: 0;
       font-family: Arial, "Noto Sans Bengali", sans-serif;
-      background: #f5f7fb;
       color: #172033;
+      background:
+        radial-gradient(circle at top right, rgba(0, 137, 123, 0.12), transparent 35%),
+        linear-gradient(180deg, #f4fbfa 0%, #f7f9fc 48%, #eef5f4 100%);
+      min-height: 100vh;
     }
 
+    /* =========================
+       HERO
+    ========================= */
+
     header {
-      background: linear-gradient(135deg, #00695c, #00897b);
+      position: relative;
+      overflow: hidden;
       color: white;
-      padding: 30px 18px;
+      padding: 58px 18px 72px;
       text-align: center;
+      background:
+        radial-gradient(circle at 20% 20%, rgba(255,255,255,.18), transparent 25%),
+        radial-gradient(circle at 85% 15%, rgba(255,255,255,.13), transparent 22%),
+        linear-gradient(135deg, #004d40, #00695c 48%, #00897b);
+    }
+
+    header::before {
+      content: "";
+      position: absolute;
+      width: 230px;
+      height: 230px;
+      border: 1px solid rgba(255,255,255,.14);
+      border-radius: 50%;
+      top: -120px;
+      right: -60px;
+    }
+
+    header::after {
+      content: "";
+      position: absolute;
+      width: 180px;
+      height: 180px;
+      border: 1px solid rgba(255,255,255,.10);
+      border-radius: 50%;
+      bottom: -100px;
+      left: -50px;
+    }
+
+    .hero-content {
+      position: relative;
+      z-index: 2;
+      max-width: 850px;
+      margin: auto;
+    }
+
+    .ministry-icon {
+      width: 76px;
+      height: 76px;
+      margin: 0 auto 18px;
+      border-radius: 24px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 39px;
+      background: rgba(255,255,255,.14);
+      border: 1px solid rgba(255,255,255,.22);
+      box-shadow: 0 15px 40px rgba(0,0,0,.12);
+      backdrop-filter: blur(10px);
     }
 
     header h1 {
-      margin: 0 0 8px;
-      font-size: 28px;
+      margin: 0 0 12px;
+      font-size: clamp(30px, 7vw, 46px);
+      font-weight: 800;
+      letter-spacing: -1px;
     }
 
     header p {
       margin: 0;
-      opacity: 0.95;
+      font-size: 16px;
+      opacity: .92;
     }
+
+    /* =========================
+       CONTAINER
+    ========================= */
 
     .container {
-      width: min(900px, 94%);
-      margin: 22px auto;
+      width: min(950px, 92%);
+      margin: -35px auto 40px;
+      position: relative;
+      z-index: 5;
     }
+
+    /* =========================
+       BACK BUTTON
+    ========================= */
 
     .back {
-      display: inline-block;
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
       margin-bottom: 18px;
+      padding: 10px 16px;
+      border-radius: 50px;
       text-decoration: none;
       color: #00695c;
+      background: rgba(255,255,255,.92);
+      border: 1px solid rgba(0,105,92,.10);
+      box-shadow: 0 6px 20px rgba(0,0,0,.06);
       font-weight: bold;
+      transition: .2s ease;
     }
 
+    .back:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 25px rgba(0,0,0,.10);
+    }
+
+    /* =========================
+       MAIN CARD
+    ========================= */
+
     .card {
-      background: white;
-      border-radius: 16px;
-      padding: 20px;
-      margin-bottom: 18px;
-      box-shadow: 0 5px 18px rgba(0, 0, 0, 0.07);
+      background: rgba(255,255,255,.93);
+      border: 1px solid rgba(255,255,255,.85);
+      border-radius: 24px;
+      padding: 28px;
+      margin-bottom: 20px;
+      box-shadow:
+        0 18px 50px rgba(19, 58, 54, .09),
+        0 3px 12px rgba(0,0,0,.04);
+      backdrop-filter: blur(12px);
+    }
+
+    .search-card {
+      position: relative;
+      overflow: hidden;
+    }
+
+    .search-card::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 5px;
+      background: linear-gradient(90deg, #004d40, #00897b, #26a69a);
     }
 
     .card h2 {
-      margin-top: 0;
-      font-size: 21px;
+      margin: 0 0 9px;
+      font-size: 23px;
     }
+
+    .subtitle {
+      color: #657080;
+      margin: 0 0 22px;
+      line-height: 1.7;
+    }
+
+    /* =========================
+       SEARCH
+    ========================= */
 
     .search-box {
       display: flex;
       gap: 10px;
-      flex-wrap: wrap;
+      padding: 7px;
+      background: #f3f7f7;
+      border: 1px solid #e1ecea;
+      border-radius: 15px;
     }
 
     input {
       flex: 1;
-      min-width: 220px;
-      padding: 14px;
-      border: 1px solid #d5d9e2;
-      border-radius: 10px;
+      min-width: 0;
+      padding: 15px 16px;
+      border: 0;
+      background: transparent;
+      border-radius: 11px;
       font-size: 16px;
+      color: #172033;
       outline: none;
     }
 
+    input::placeholder {
+      color: #89939f;
+    }
+
     input:focus {
-      border-color: #00897b;
+      background: white;
+      box-shadow: 0 0 0 2px rgba(0,137,123,.10);
     }
 
     button {
-      padding: 14px 24px;
       border: 0;
-      border-radius: 10px;
-      background: #00695c;
+      border-radius: 12px;
+      padding: 14px 25px;
+      background: linear-gradient(135deg, #00695c, #00897b);
       color: white;
       font-size: 16px;
-      font-weight: bold;
+      font-weight: 700;
       cursor: pointer;
+      box-shadow: 0 8px 18px rgba(0,105,92,.20);
+      transition: .2s ease;
     }
 
     button:hover {
-      background: #004d40;
+      transform: translateY(-2px);
+      box-shadow: 0 12px 24px rgba(0,105,92,.25);
+    }
+
+    button:active {
+      transform: translateY(0);
+    }
+
+    /* =========================
+       RESULT
+    ========================= */
+
+    #powerResults {
+      margin-top: 20px;
     }
 
     .result {
-      border: 1px solid #e2e6ef;
-      border-radius: 12px;
-      padding: 18px;
+      position: relative;
+      overflow: hidden;
+      background: linear-gradient(145deg, #ffffff, #f7fbfa);
+      border: 1px solid #dcebe8;
+      border-radius: 19px;
+      padding: 23px;
       margin-top: 15px;
-      background: #fafbff;
+      box-shadow: 0 10px 28px rgba(0,0,0,.06);
+      animation: showResult .3s ease;
     }
 
-    .result p {
-      margin: 9px 0;
-      line-height: 1.6;
+    .result::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 5px;
+      height: 100%;
+      background: linear-gradient(180deg, #00695c, #26a69a);
     }
 
-    .label {
+    .result-header {
+      display: flex;
+      align-items: center;
+      gap: 13px;
+      margin-bottom: 18px;
+    }
+
+    .official-icon {
+      width: 48px;
+      height: 48px;
+      flex-shrink: 0;
+      border-radius: 15px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #e4f4f1;
+      font-size: 24px;
+    }
+
+    .official-name {
+      font-size: 19px;
+      font-weight: 800;
+      color: #123d38;
+    }
+
+    .official-status {
+      display: inline-block;
+      margin-top: 5px;
+      padding: 4px 9px;
+      border-radius: 20px;
+      font-size: 12px;
       font-weight: bold;
+      color: #00695c;
+      background: #e4f4f1;
     }
+
+    .info-row {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      padding: 11px 0;
+      border-top: 1px solid #edf1f2;
+    }
+
+    .info-icon {
+      width: 28px;
+      flex-shrink: 0;
+      text-align: center;
+    }
+
+    .info-label {
+      color: #77818c;
+      font-size: 13px;
+      margin-bottom: 2px;
+    }
+
+    .info-value {
+      font-weight: 700;
+      color: #26343c;
+    }
+
+    /* =========================
+       EMPTY / ERROR
+    ========================= */
 
     .empty {
-      color: #777;
       text-align: center;
-      padding: 18px;
+      padding: 22px;
+      border-radius: 15px;
+      color: #737d88;
+      background: #f7f9fa;
+      border: 1px dashed #d8e1e1;
     }
 
     .error {
-      color: #b71c1c;
-      background: #ffebee;
-      padding: 14px;
-      border-radius: 10px;
-      margin-top: 15px;
+      color: #9d2020;
+      background: #fff1f1;
+      border: 1px solid #ffd6d6;
+      padding: 16px;
+      border-radius: 14px;
       line-height: 1.7;
     }
 
-    .info {
-      line-height: 1.9;
+    /* =========================
+       INFORMATION SECTION
+    ========================= */
+
+    .info-card {
+      background:
+        linear-gradient(145deg, rgba(0,105,92,.04), rgba(255,255,255,.95));
     }
+
+    .info-title {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .structure {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 8px;
+      margin-top: 20px;
+    }
+
+    .structure span {
+      padding: 9px 13px;
+      border-radius: 10px;
+      background: #edf7f5;
+      color: #00695c;
+      font-weight: 700;
+      font-size: 14px;
+    }
+
+    .arrow {
+      color: #91a5a2;
+      font-weight: bold;
+    }
+
+    .info-text {
+      color: #657080;
+      line-height: 1.9;
+      margin-bottom: 0;
+    }
+
+    /* =========================
+       FOOTER
+    ========================= */
 
     footer {
       text-align: center;
-      padding: 25px 15px;
-      color: #777;
+      padding: 25px 15px 35px;
+      color: #7a858e;
       font-size: 14px;
+    }
+
+    .footer-mark {
+      display: inline-block;
+      margin-bottom: 6px;
+      color: #00695c;
+      font-weight: 800;
+    }
+
+    /* =========================
+       ANIMATION
+    ========================= */
+
+    @keyframes showResult {
+      from {
+        opacity: 0;
+        transform: translateY(8px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    /* =========================
+       MOBILE
+    ========================= */
+
+    @media (max-width: 600px) {
+
+      header {
+        padding: 42px 16px 62px;
+      }
+
+      .ministry-icon {
+        width: 65px;
+        height: 65px;
+        border-radius: 20px;
+        font-size: 32px;
+      }
+
+      header h1 {
+        font-size: 30px;
+      }
+
+      header p {
+        font-size: 14px;
+      }
+
+      .container {
+        width: 94%;
+        margin-top: -28px;
+      }
+
+      .card {
+        padding: 20px;
+        border-radius: 20px;
+      }
+
+      .card h2 {
+        font-size: 20px;
+      }
+
+      .search-box {
+        flex-direction: column;
+        padding: 8px;
+      }
+
+      input {
+        width: 100%;
+        padding: 14px;
+      }
+
+      button {
+        width: 100%;
+      }
+
+      .result {
+        padding: 19px;
+      }
+
+      .structure {
+        gap: 6px;
+      }
+
+      .structure span {
+        font-size: 13px;
+      }
+
+      .arrow {
+        display: none;
+      }
     }
   </style>
 </head>
 
 <body>
 
+  <!-- =========================
+       HERO
+  ========================== -->
+
   <header>
-    <h1>⚡ বিদ্যুৎ মন্ত্রণালয়</h1>
-    <p>আর্থিক স্বচ্ছতা — প্রকাশিত তথ্য ও যাচাই</p>
+
+    <div class="hero-content">
+
+      <div class="ministry-icon">
+        ⚡
+      </div>
+
+      <h1>বিদ্যুৎ মন্ত্রণালয়</h1>
+
+      <p>
+        আর্থিক স্বচ্ছতা — প্রকাশিত তথ্য ও যাচাই
+      </p>
+
+    </div>
+
   </header>
+
 
   <main class="container">
 
@@ -163,11 +534,16 @@
       ← মূল পেজে ফিরে যান
     </a>
 
-    <section class="card">
+
+    <!-- =========================
+         SEARCH CARD
+    ========================== -->
+
+    <section class="card search-card">
 
       <h2>🔎 বিদ্যুৎ মন্ত্রণালয়ের তথ্য খুঁজুন</h2>
 
-      <p>
+      <p class="subtitle">
         দপ্তর, কর্মকর্তা বা পদবী দিয়ে অনুসন্ধান করুন।
       </p>
 
@@ -177,10 +553,11 @@
           type="text"
           id="powerSearch"
           placeholder="যেমন: ডেমো কর্মকর্তা"
+          autocomplete="off"
         >
 
         <button onclick="searchPower()">
-          খুঁজুন
+          🔍 খুঁজুন
         </button>
 
       </div>
@@ -189,25 +566,79 @@
 
     </section>
 
-    <section class="card info">
 
-      <h2>📌 তথ্যের কাঠামো</h2>
+    <!-- =========================
+         INFORMATION CARD
+    ========================== -->
 
-      <p>
-        মন্ত্রণালয় → দপ্তর → কর্মকর্তা → আয় → সম্পদ → দায় → উৎস → যাচাই
-      </p>
+    <section class="card info-card">
 
-      <p>
-        এখানে শুধুমাত্র আইনসম্মতভাবে প্রকাশযোগ্য তথ্য প্রকাশের উদ্দেশ্যে
-        তথ্যের কাঠামো তৈরি করা হচ্ছে।
+      <div class="info-title">
+
+        <div style="font-size:26px;">
+          📌
+        </div>
+
+        <h2>
+          তথ্যের কাঠামো
+        </h2>
+
+      </div>
+
+      <div class="structure">
+
+        <span>মন্ত্রণালয়</span>
+
+        <div class="arrow">→</div>
+
+        <span>দপ্তর</span>
+
+        <div class="arrow">→</div>
+
+        <span>কর্মকর্তা</span>
+
+        <div class="arrow">→</div>
+
+        <span>আয়</span>
+
+        <div class="arrow">→</div>
+
+        <span>সম্পদ</span>
+
+        <div class="arrow">→</div>
+
+        <span>দায়</span>
+
+        <div class="arrow">→</div>
+
+        <span>উৎস</span>
+
+        <div class="arrow">→</div>
+
+        <span>যাচাই</span>
+
+      </div>
+
+      <p class="info-text">
+        এখানে শুধুমাত্র আইনসম্মতভাবে প্রকাশযোগ্য তথ্য প্রকাশের
+        উদ্দেশ্যে তথ্যের কাঠামো তৈরি করা হচ্ছে।
       </p>
 
     </section>
 
   </main>
 
+
   <footer>
-    © আর্থিক স্বচ্ছতা
+
+    <div class="footer-mark">
+      ⚡ আর্থিক স্বচ্ছতা
+    </div>
+
+    <br>
+
+    জনগণের তথ্য, জনগণের জানার অধিকার।
+
   </footer>
 
 
@@ -232,7 +663,11 @@
     async function searchPower() {
 
       const searchText =
-        document.getElementById("powerSearch").value.trim().toLowerCase();
+        document
+          .getElementById("powerSearch")
+          .value
+          .trim()
+          .toLowerCase();
 
       const resultsDiv =
         document.getElementById("powerResults");
@@ -243,7 +678,7 @@
       if (!searchText) {
 
         resultsDiv.innerHTML =
-          '<div class="empty">অনুসন্ধানের জন্য কিছু লিখুন।</div>';
+          '<div class="empty">🔎 অনুসন্ধানের জন্য কিছু লিখুন।</div>';
 
         return;
       }
@@ -253,7 +688,7 @@
 
         /*
           প্রথমে নিশ্চিত করছি যে Department ID 11
-          সত্যিই Ministry ID 6-এর অধীনে আছে।
+          Ministry ID 6-এর অধীনে আছে।
         */
 
         const {
@@ -276,7 +711,7 @@
 
           resultsDiv.innerHTML = `
             <div class="error">
-              বিদ্যুৎ মন্ত্রণালয়ের নির্ধারিত দপ্তর পাওয়া যায়নি।
+              ⚠️ বিদ্যুৎ মন্ত্রণালয়ের নির্ধারিত দপ্তর পাওয়া যায়নি।
             </div>
           `;
 
@@ -285,8 +720,7 @@
 
 
         /*
-          এখন শুধুমাত্র department_id = 11
-          এর কর্মকর্তাদের নেওয়া হচ্ছে।
+          শুধুমাত্র Department ID 11-এর কর্মকর্তা।
         */
 
         const {
@@ -307,7 +741,7 @@
 
           resultsDiv.innerHTML = `
             <div class="empty">
-              এই দপ্তরের কোনো কর্মকর্তা তথ্য পাওয়া যায়নি।
+              📭 এই দপ্তরের কোনো কর্মকর্তা তথ্য পাওয়া যায়নি।
             </div>
           `;
 
@@ -316,37 +750,35 @@
 
 
         /*
-          Search filtering এখন JavaScript-এ করা হচ্ছে।
-
-          ফলে একই নামে অন্য মন্ত্রণালয়ের কর্মকর্তা
-          কোনোভাবেই এই ফলাফলে আসবে না।
+          Search filtering
         */
 
-        const filteredOfficials = officials.filter(official => {
+        const filteredOfficials =
+          officials.filter(official => {
 
-          const name =
-            (official.name || "").toLowerCase();
+            const name =
+              (official.name || "").toLowerCase();
 
-          const designation =
-            (official.designation || "").toLowerCase();
+            const designation =
+              (official.designation || "").toLowerCase();
 
-          const departmentName =
-            (department.name || "").toLowerCase();
+            const departmentName =
+              (department.name || "").toLowerCase();
 
-          return (
-            name.includes(searchText) ||
-            designation.includes(searchText) ||
-            departmentName.includes(searchText)
-          );
+            return (
+              name.includes(searchText) ||
+              designation.includes(searchText) ||
+              departmentName.includes(searchText)
+            );
 
-        });
+          });
 
 
         if (filteredOfficials.length === 0) {
 
           resultsDiv.innerHTML = `
             <div class="empty">
-              কোনো তথ্য পাওয়া যায়নি।
+              🔎 কোনো তথ্য পাওয়া যায়নি।
             </div>
           `;
 
@@ -367,35 +799,120 @@
 
           result.innerHTML = `
 
-            <p>
-              <span class="label">👤 কর্মকর্তা:</span>
-              ${official.name || "তথ্য নেই"}
-            </p>
+            <div class="result-header">
 
-            <p>
-              <span class="label">💼 পদবী:</span>
-              ${official.designation || "তথ্য নেই"}
-            </p>
+              <div class="official-icon">
+                👤
+              </div>
 
-            <p>
-              <span class="label">🏢 দপ্তর:</span>
-              ${department.name || "তথ্য নেই"}
-            </p>
+              <div>
 
-            <p>
-              <span class="label">📍 জেলা:</span>
-              ${department.district || "তথ্য নেই"}
-            </p>
+                <div class="official-name">
+                  ${official.name || "তথ্য নেই"}
+                </div>
 
-            <p>
-              <span class="label">📍 উপজেলা:</span>
-              ${department.upazila || "তথ্য নেই"}
-            </p>
+                <span class="official-status">
+                  প্রকাশযোগ্য তথ্য
+                </span>
 
-            <p>
-              <span class="label">⚡ মন্ত্রণালয়:</span>
-              বিদ্যুৎ মন্ত্রণালয়
-            </p>
+              </div>
+
+            </div>
+
+
+            <div class="info-row">
+
+              <div class="info-icon">💼</div>
+
+              <div>
+
+                <div class="info-label">
+                  পদবী
+                </div>
+
+                <div class="info-value">
+                  ${official.designation || "তথ্য নেই"}
+                </div>
+
+              </div>
+
+            </div>
+
+
+            <div class="info-row">
+
+              <div class="info-icon">🏢</div>
+
+              <div>
+
+                <div class="info-label">
+                  দপ্তর
+                </div>
+
+                <div class="info-value">
+                  ${department.name || "তথ্য নেই"}
+                </div>
+
+              </div>
+
+            </div>
+
+
+            <div class="info-row">
+
+              <div class="info-icon">📍</div>
+
+              <div>
+
+                <div class="info-label">
+                  জেলা
+                </div>
+
+                <div class="info-value">
+                  ${department.district || "তথ্য নেই"}
+                </div>
+
+              </div>
+
+            </div>
+
+
+            <div class="info-row">
+
+              <div class="info-icon">📍</div>
+
+              <div>
+
+                <div class="info-label">
+                  উপজেলা
+                </div>
+
+                <div class="info-value">
+                  ${department.upazila || "তথ্য নেই"}
+                </div>
+
+              </div>
+
+            </div>
+
+
+            <div class="info-row">
+
+              <div class="info-icon">⚡</div>
+
+              <div>
+
+                <div class="info-label">
+                  মন্ত্রণালয়
+                </div>
+
+                <div class="info-value">
+                  বিদ্যুৎ মন্ত্রণালয়
+                </div>
+
+              </div>
+
+            </div>
 
           `;
 
@@ -410,11 +927,13 @@
 
         resultsDiv.innerHTML = `
           <div class="error">
-            তথ্য খুঁজতে সমস্যা হয়েছে।
+            ⚠️ তথ্য খুঁজতে সমস্যা হয়েছে।
             <br>
             কিছুক্ষণ পরে আবার চেষ্টা করুন।
             <br>
-            <small>${error.message || "অজানা সমস্যা"}</small>
+            <small>
+              ${error.message || "অজানা সমস্যা"}
+            </small>
           </div>
         `;
 
@@ -440,4 +959,5 @@
   </script>
 
 </body>
+
 </html>
