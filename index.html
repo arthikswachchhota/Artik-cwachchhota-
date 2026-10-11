@@ -3411,18 +3411,24 @@
             );
 
 
-        if (!result.error) {
+        if (result.error) {
+  console.error(
+    "Officials API error:",
+    result.error
+  );
+} else {
+  console.log(
+    "Officials count:",
+    result.count
+  );
 
-          document.getElementById(
-            "verifiedCount"
-          ).textContent =
-            currentLanguage === "bn"
-              ? banglaNumber(
-                  result.count || 0
-                )
-              : String(
-                  result.count || 0
-                );
+  document.getElementById(
+    "officialCount"
+  ).textContent =
+    currentLanguage === "bn"
+      ? banglaNumber(result.count || 0)
+      : String(result.count || 0);
+}
 
         }
 
