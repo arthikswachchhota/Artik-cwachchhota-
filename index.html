@@ -1574,9 +1574,8 @@
       ⚠️ service_role / secret key এখানে কখনো বসাবে না।
     */
 
-    const SUPABASE_PUBLISHABLE_KEY = 
-      sb_publishable_Rb2oZZ6XzXFZSpkNSRgqLQ_njWY-TtY
-
+    const SUPABASE_PUBLISHABLE_KEY =  
+"sb_publishable_Rb2oZZ6XzXFZSpkNSRgqLQ_njWY-TtY"
 
 
     let db = null;
@@ -3300,148 +3299,150 @@
 
     async function loadStatistics() {
 
-      if (!db) return;
+  if (!db) return;
 
+  /*
+    Officials count
+  */
 
-      /*
-        Officials count
-      */
+  try {
 
-      try {
+    const result = await db
+      .from("officials")
+      .select("id", {
+        count: "exact",
+        head: true
+      });
 
-        const result =
-          await db
-            .from("officials")
-            .select(
-              "id",
-              {
-                count: "exact",
-                head: true
-              }
-            );
+    if (result.error) {
 
+      console.error(
+        "Officials API error:",
+        result.error
+      );
 
-        if (!result.error) {
+    } else {
 
-          document.getElementById(
-            "officialCount"
-          ).textContent =
-            currentLanguage === "bn"
-              ? banglaNumber(
-                  result.count || 0
-                )
-              : String(
-                  result.count || 0
-                );
+      console.log(
+        "Officials count:",
+        result.count
+      );
 
-        }
-
-      } catch (error) {
-
-        console.warn(
-          "Officials statistics unavailable:",
-          error
-        );
-
-      }
-
-
-      /*
-        Financial profile count
-      */
-
-      try {
-
-        const result =
-          await db
-            .from("financial_profiles")
-            .select(
-              "id",
-              {
-                count: "exact",
-                head: true
-              }
-            );
-
-
-        if (!result.error) {
-
-          document.getElementById(
-            "profileCount"
-          ).textContent =
-            currentLanguage === "bn"
-              ? banglaNumber(
-                  result.count || 0
-                )
-              : String(
-                  result.count || 0
-                );
-
-        }
-
-      } catch (error) {
-
-        console.warn(
-          "Financial profile statistics unavailable:",
-          error
-        );
-
-      }
-
-
-      /*
-        Verified records count
-      */
-
-      try {
-
-        const result =
-          await db
-            .from("financial_records")
-            .select(
-              "id",
-              {
-                count: "exact",
-                head: true
-              }
-            )
-            .eq(
-              "verification_status",
-              "verified"
-            );
-
-
-        if (result.error) {
-  console.error(
-    "Officials API error:",
-    result.error
-  );
-} else {
-  console.log(
-    "Officials count:",
-    result.count
-  );
-
-  document.getElementById(
-    "officialCount"
-  ).textContent =
-    currentLanguage === "bn"
-      ? banglaNumber(result.count || 0)
-      : String(result.count || 0);
-}
-
-        }
-
-      } catch (error) {
-
-        console.warn(
-          "Verified statistics unavailable:",
-          error
-        );
-
-      }
+      document.getElementById(
+        "officialCount"
+      ).textContent =
+        currentLanguage === "bn"
+          ? banglaNumber(result.count || 0)
+          : String(result.count || 0);
 
     }
+
+  } catch (error) {
+
+    console.warn(
+      "Officials statistics unavailable:",
+      error
+    );
+
+  }
+
+
+  /*
+    Financial profile count
+  */
+
+  try {
+
+    const result = await db
+      .from("financial_profiles")
+      .select("id", {
+        count: "exact",
+        head: true
+      });
+
+    if (result.error) {
+
+      console.error(
+        "Financial profiles API error:",
+        result.error
+      );
+
+    } else {
+
+      console.log(
+        "Financial profiles count:",
+        result.count
+      );
+
+      document.getElementById(
+        "profileCount"
+      ).textContent =
+        currentLanguage === "bn"
+          ? banglaNumber(result.count || 0)
+          : String(result.count || 0);
+
+    }
+
+  } catch (error) {
+
+    console.warn(
+      "Financial profile statistics unavailable:",
+      error
+    );
+
+  }
+
+
+  /*
+    Verified records count
+  */
+
+  try {
+
+    const result = await db
+      .from("financial_records")
+      .select("id", {
+        count: "exact",
+        head: true
+      })
+      .eq(
+        "verification_status",
+        "verified"
+      );
+
+    if (result.error) {
+
+      console.error(
+        "Verified records API error:",
+        result.error
+      );
+
+    } else {
+
+      console.log(
+        "Verified records count:",
+        result.count
+      );
+
+      document.getElementById(
+        "verifiedCount"
+      ).textContent =
+        currentLanguage === "bn"
+          ? banglaNumber(result.count || 0)
+          : String(result.count || 0);
+
+    }
+
+  } catch (error) {
+
+    console.warn(
+      "Verified statistics unavailable:",
+      error
+    );
+
+  }
+
+}
 
 
     /* =========================================
