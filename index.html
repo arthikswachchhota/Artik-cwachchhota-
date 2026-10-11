@@ -3592,8 +3592,21 @@
       }
 
     }
+    
+/* TEMPORARY SUPABASE API TEST */
 
+async function testSupabaseRead() {
+  console.log("Supabase client:", !!db);
 
+  const { data, error, count } = await db
+    .from("officials")
+    .select("*", { count: "exact" })
+    .limit(2);
+
+  console.log("API error:", error);
+  console.log("API count:", count);
+  console.log("API data:", data);
+}
     /* =========================================
        START
     ========================================== */
@@ -3611,10 +3624,9 @@
 
 
         if (connected) {
-
-          await loadStatistics();
-
-        }
+  await testSupabaseRead();
+  await loadStatistics();
+}
 
       }
     );
