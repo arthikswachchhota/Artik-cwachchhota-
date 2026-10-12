@@ -1934,176 +1934,86 @@
        MINISTRY SEARCH
     ========================================== */
 
-    async function searchMinistries() {
+    
+async function searchMinistries() {
+  const input = document.getElementById("ministrySearchInput");
+  const container = document.getElementById("ministrySearchResults");
+  const count = document.getElementById("ministryResultCount");
 
-      const input =
-        document.getElementById(
-          "ministrySearchInput"
-        );
+  const searchValue = input.value.trim();
 
-      const container =
-        document.getElementById(
-          "ministrySearchResults"
-        );
+  if (!searchValue) {
+    container.innerHTML = `
+      <div class="empty-state">
+        ${currentLanguage === "bn"
+          ? "মন্ত্রণালয়ের নাম লিখুন।"
+          : "Enter a ministry name."}
+      </div>`;
+    count.textContent = "০";
+    showResultsSection();
+    return;
+  }
 
-      const count =
-        document.getElementById(
-          "ministryResultCount"
-        );
+  if (!db) {
+    container.innerHTML = `
+      <div class="empty-state">
+        ${currentLanguage === "bn"
+          ? "Supabase সংযোগ পাওয়া যায়নি।"
+          : "Supabase connection is not available."}
+      </div>`;
+    showResultsSection();
+    return;
+  }
 
-
-      const searchValue =
-        input.value.trim();
-
-
-      if (!searchValue) {
-
-        container.innerHTML =
-          `<div class="empty-state">
-            ${currentLanguage === "bn"
-              ? "মন্ত্রণালয়ের নাম লিখুন।"
-              : "Enter a ministry name."}
-          </div>`;
-
-        count.textContent = "০";
-
-        showResultsSection();
-
-        return;
-
-      }
-
-
-      if (!db) {
-
-        container.innerHTML =
-          `<div class="empty-state">
-            ${currentLanguage === "bn"
-              ? "Supabase সংযোগ পাওয়া যায়নি।"
-              : "Supabase connection is not available."}
-          </div>`;
-
-        showResultsSection();
-
-        return;
-
-      }
-
-
-      container.innerHTML =
-        `<div class="loading">
-          ${currentLanguage === "bn"
-            ? "খোঁজা হচ্ছে..."
-            : "Searching..."}
-        </div>`;
-
-
-      showResultsSection();
-
-
-      try {
-
-        const cleanSearch =
-          searchValue
-            .replace(/%/g, "")
-            .replace(/_/g, "")
-            .slice(0, 100);
-
-
-        const { data, error } =
-          await db
-            .from("ministries")
-            .select("id, name, created_at")
-            .ilike(
-              "name",
-              "%" + cleanSearch + "%"
-            )
-            .limit(25);
-console.log("Ministry search result:", { data, error });
-
-        if (error) {
-          throw error;
-        }
-
-
-        count.textContent =
-          currentLanguage === "bn"
-            ? banglaNumber(data.length)
-            : String(data.length);
-
-
-        if (!data.length) {
-
-          container.innerHTML =
-            `<div class="empty-state">
-              ${currentLanguage === "bn"
-                ? "কোনো মন্ত্রণালয় পাওয়া যায়নি।"
-                : "No ministry found."}
-            </div>`;
-
-          return;
-
-        }
-
-
-        container.innerHTML =
-          data.map(ministry => {
-
-            return `
-              <div class="result-card">
-
-                <h3>
-                  ${escapeHtml(ministry.name)}
-                </h3>
-
-                ${
-                  ministry.designation
-                    ? `<div class="designation">
-                        ${escapeHtml(ministry.designation)}
-                      </div>`
-                    : ""
-                }
-
-                <div class="mini-info">
-
-                  <div>
-                    <span>
-                      ${currentLanguage === "bn"
-                        ? "রেকর্ড আইডি"
-                        : "Record ID"}
-                    </span>
-
-                    <span>
-                      ${escapeHtml(ministry.id)}
-                    </span>
-                  </div>
-
-                </div>
-
-              </div>
-            `;
-
-          }).join("");
-
-
-      } catch (error) {
-
-  console.error(
-    "Ministry search error:",
-    error
-  );
-
-  container.innerHTML =
-    `<div class="empty-state">
-      <p>Error: ${escapeHtml(error.message || String(error))}</p>
-      <p>Code: ${escapeHtml(error.code || "N/A")}</p>
-      <p>Details: ${escapeHtml(error.details || "N/A")}</p>
-      <p>Hint: ${escapeHtml(error.hint || "N/A")}</p>
+  container.innerHTML = `
+    <div class="loading">
+      ${currentLanguage === "bn" ? "খোঁজা হচ্ছে..." : "Searching..."}
     </div>`;
 
+  showResultsSection();
+
+  try {
+    const cleanSearch = searchValue
+      .replace(/%/g, "")
+      .replace(/_/g, "")
+      .slice(0, 100);
+
+    const { data, error } = await db
+      .from("ministries")
+      .select("id, name, created_at")
+      .ilike("name", "%" + cleanSearch + "%")
+      .limit(25);
+
+    // অস্থায়ী পরীক্ষা: Supabase-এর আসল ফলাফল দেখাবে
+    container.innerHTML = `
+      <pre style="white-space:pre-wrap;overflow-wrap:anywhere">${escapeHtml(
+        JSON.stringify({
+          data: data,
+          error: error ? {
+            message: error.message,
+            code: error.code,
+            details: error.details,
+            hint: error.hint
+          } : null
+        }, null, 2)
+      )}</pre>`;
+
+    return;
+
+  } catch (error) {
+    console.error("Ministry search error:", error);
+
+    container.innerHTML = `
+      <div class="empty-state">
+        ${currentLanguage === "bn"
+          ? "মন্ত্রণালয়ের তথ্য খুঁজতে সমস্যা হয়েছে।"
+          : "There was a problem searching ministries."}
+        <br>
+        ${escapeHtml(error.message || String(error))}
+      </div>`;
+  }
 }
 
-    }
 
 
     /* =========================================
