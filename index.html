@@ -2092,7 +2092,13 @@ console.log("Ministry search result:", { data, error });
           "Ministry search error:",
           error
         );
-
+container.innerHTML =
+  `<div class="empty-state">
+    <p>Error: ${escapeHtml(error.message || String(error))}</p>
+    <p>Code: ${escapeHtml(error.code || "N/A")}</p>
+    <p>Details: ${escapeHtml(error.details || "N/A")}</p>
+    <p>Hint: ${escapeHtml(error.hint || "N/A")}</p>
+  </div>`;
         container.innerHTML =
           `<div class="empty-state">
             ${currentLanguage === "bn"
