@@ -2088,25 +2088,20 @@ console.log("Ministry search result:", { data, error });
 
       } catch (error) {
 
-        console.error(
-          "Ministry search error:",
-          error
-        );
-container.innerHTML =
-  `<div class="empty-state">
-    <p>Error: ${escapeHtml(error.message || String(error))}</p>
-    <p>Code: ${escapeHtml(error.code || "N/A")}</p>
-    <p>Details: ${escapeHtml(error.details || "N/A")}</p>
-    <p>Hint: ${escapeHtml(error.hint || "N/A")}</p>
-  </div>`;
-        container.innerHTML =
-          `<div class="empty-state">
-            ${currentLanguage === "bn"
-              ? "মন্ত্রণালয়ের তথ্য খুঁজতে সমস্যা হয়েছে। Supabase table/column পরীক্ষা করুন।"
-              : "There was a problem searching ministries. Check the Supabase table/columns."}
-          </div>`;
+  console.error(
+    "Ministry search error:",
+    error
+  );
 
-      }
+  container.innerHTML =
+    `<div class="empty-state">
+      <p>Error: ${escapeHtml(error.message || String(error))}</p>
+      <p>Code: ${escapeHtml(error.code || "N/A")}</p>
+      <p>Details: ${escapeHtml(error.details || "N/A")}</p>
+      <p>Hint: ${escapeHtml(error.hint || "N/A")}</p>
+    </div>`;
+
+}
 
     }
 
