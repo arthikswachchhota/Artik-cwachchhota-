@@ -2013,7 +2013,7 @@
         const { data, error } =
           await db
             .from("ministries")
-            .select("id, name, designation, created_at")
+            .select("id, name, created_at")
             .ilike(
               "name",
               "%" + cleanSearch + "%"
