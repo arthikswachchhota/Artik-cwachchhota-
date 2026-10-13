@@ -1984,10 +1984,20 @@ async function searchMinistries() {
   .ilike("name", "%" + cleanSearch + "%")
   .limit(25);
 
-console.log("Ministry search input:", cleanSearch);
-console.log("Ministry API error:", error);
-console.log("Ministry API data:", data);
-console.log("Ministry API rows:", data?.length ?? 0);
+container.innerHTML = `
+  <div class="result-card">
+    <h3>Ministry API Diagnostic</h3>
+    <p><strong>Search:</strong> ${escapeHtml(cleanSearch)}</p>
+    <p><strong>Error:</strong> ${escapeHtml(
+      error ? error.message : "None"
+    )}</p>
+    <pre style="white-space:pre-wrap;overflow-wrap:anywhere;">${escapeHtml(
+      JSON.stringify(data, null, 2)
+    )}</pre>
+  </div>
+`;
+
+return;
 
     if (error) {
       console.error("Ministry search API error:", error);
