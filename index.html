@@ -1979,10 +1979,15 @@ async function searchMinistries() {
       .slice(0, 100);
 
             const { data, error } = await db
-      .from("ministries")
-      .select("id, name, created_at")
-      .ilike("name", "%" + cleanSearch + "%")
-      .limit(25);
+  .from("ministries")
+  .select("id, name, created_at")
+  .ilike("name", "%" + cleanSearch + "%")
+  .limit(25);
+
+console.log("Ministry search input:", cleanSearch);
+console.log("Ministry API error:", error);
+console.log("Ministry API data:", data);
+console.log("Ministry API rows:", data?.length ?? 0);
 
     if (error) {
       console.error("Ministry search API error:", error);
