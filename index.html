@@ -1978,27 +1978,54 @@ async function searchMinistries() {
       .replace(/_/g, "")
       .slice(0, 100);
 
-    const { data, error } = await db
+        const { data, error } = await db
       .from("ministries")
       .select("id, name, created_at")
       .ilike("name", "%" + cleanSearch + "%")
       .limit(25);
 
-    // অস্থায়ী পরীক্ষা: Supabase-এর আসল ফলাফল দেখাবে
-    container.innerHTML = `
-      <pre style="white-space:pre-wrap;overflow-wrap:anywhere">${escapeHtml(
-        JSON.stringify({
-          data: data,
-          error: error ? {
-            message: error.message,
-            code: error.code,
-            details: error.details,
-            hint: error.hint
-          } : null
-        }, null, 2)
-      )}</pre>`;
+    if (error) {
+      console.error("Ministry search API error:", error);
 
-    return;
+      container.innerHTML = `
+        <div class="empty-state">
+          ${currentLanguage === "bn"
+            ? "মন্ত্রণালয়ের তথ্য আনতে সমস্যা হয়েছে।"
+            : "Could not load ministry information."}
+          <br>
+          ${escapeHtml(error.message || String(error))}
+        </div>`;
+
+      return;
+    }
+
+    count.textContent =
+      currentLanguage === "bn"
+        ? banglaNumber((data || []).length)
+        : String((data || []).length);
+
+    if (!data || data.length === 0) {
+      container.innerHTML = `
+        <div class="empty-state">
+          ${currentLanguage === "bn"
+            ? "কোনো মন্ত্রণালয় পাওয়া যায়নি।"
+            : "No ministries found."}
+        </div>`;
+
+      return;
+    }
+
+    container.innerHTML = data.map(ministry => `
+      <div class="result-card">
+        <h3>${escapeHtml(ministry.name || "")}</h3>
+        <div class="mini-info">
+          <div>
+            <span>${currentLanguage === "bn" ? "রেকর্ড আইডি" : "Record ID"}</span>
+            <span>${escapeHtml(ministry.id)}</span>
+          </div>
+        </div>
+      </div>
+    `).join("");
 
   } catch (error) {
     console.error("Ministry search error:", error);
