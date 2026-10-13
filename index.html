@@ -1981,7 +1981,6 @@ async function searchMinistries() {
             const { data, error } = await db
   .from("ministries")
   .select("id, name, created_at")
-  .ilike("name", "%" + cleanSearch + "%")
   .limit(25);
 
 container.innerHTML = `
